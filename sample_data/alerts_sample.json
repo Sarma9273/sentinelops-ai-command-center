@@ -1,0 +1,53 @@
+[
+    {
+        "alert_id": "ALERT-001",
+        "timestamp": "2026-06-23 10:15:21",
+        "rule_name": "SSH Brute Force Detected",
+        "severity": "High",
+        "rule_level": 10,
+        "source_ip": "192.168.56.105",
+        "target_host": "ubuntu-server",
+        "username": "admin",
+        "event_type": "authentication_failure",
+        "failed_attempts": 78,
+        "successful_login_after_failures": true,
+        "mitre_id": "T1110",
+        "mitre_tactic": "Credential Access",
+        "mitre_technique": "Brute Force",
+        "status": "New"
+    },
+    {
+        "alert_id": "ALERT-002",
+        "timestamp": "2026-06-23 10:28:44",
+        "rule_name": "Multiple Ports Scanned",
+        "severity": "Medium",
+        "rule_level": 7,
+        "source_ip": "192.168.56.110",
+        "target_host": "web-server",
+        "username": "-",
+        "event_type": "network_scan",
+        "ports_touched": "21,22,80,443,3306,8080",
+        "successful_login_after_failures": false,
+        "mitre_id": "T1046",
+        "mitre_tactic": "Discovery",
+        "mitre_technique": "Network Service Discovery",
+        "status": "New"
+    },
+    {
+        "alert_id": "ALERT-003",
+        "timestamp": "2026-06-23 11:05:10",
+        "rule_name": "Suspicious Sudo Activity",
+        "severity": "Critical",
+        "rule_level": 12,
+        "source_ip": "192.168.56.105",
+        "target_host": "ubuntu-server",
+        "username": "test",
+        "event_type": "privilege_escalation",
+        "command": "sudo su",
+        "successful_login_after_failures": true,
+        "mitre_id": "T1548",
+        "mitre_tactic": "Privilege Escalation",
+        "mitre_technique": "Abuse Elevation Control Mechanism",
+        "status": "New"
+    }
+]

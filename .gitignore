@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# Jupyter / Colab
+.ipynb_checkpoints/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Runtime logs / temp
+*.log
+*.tmp
+*.bak
+
+# Node / frontend dependencies
+node_modules/
+frontend/dist/
+frontend/build/
+
+# Local databases / caches
+*.sqlite
+*.sqlite3
+*.db
+.cache/
+
+# ML model caches / generated binaries
+*.pt
+*.pth
+*.pkl
+*.pickle
+*.joblib

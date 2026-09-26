@@ -1,0 +1,62 @@
+{
+    "authentication_failure": {
+        "playbook_id": "PB-001",
+        "name": "SSH Brute Force Investigation Playbook",
+        "l1_steps": [
+            "Check source IP address and geolocation/reputation if available.",
+            "Check targeted usernames.",
+            "Check number of failed attempts and time window.",
+            "Verify whether successful login happened after failures.",
+            "Review authentication logs.",
+            "Create or update incident case.",
+            "Escalate if successful login occurred or privileged account was targeted."
+        ],
+        "containment_recommendation": "Block source IP in lab firewall and reset affected account password if compromise is confirmed.",
+        "escalation_condition": "Escalate if successful login follows failed attempts, root/admin account is targeted, or activity repeats."
+    },
+    "network_scan": {
+        "playbook_id": "PB-002",
+        "name": "Network Scanning Investigation Playbook",
+        "l1_steps": [
+            "Identify source IP and target asset.",
+            "List scanned ports and exposed services.",
+            "Verify whether the scan was approved/internal.",
+            "Check for follow-up exploitation attempts.",
+            "Review firewall and network logs.",
+            "Monitor same source IP for repeated activity.",
+            "Escalate if scan targets critical assets or is followed by login/exploit attempts."
+        ],
+        "containment_recommendation": "Restrict suspicious source IP and review exposed services.",
+        "escalation_condition": "Escalate if scan targets critical server, sensitive ports, or continues after blocking."
+    },
+    "privilege_escalation": {
+        "playbook_id": "PB-003",
+        "name": "Privilege Escalation Investigation Playbook",
+        "l1_steps": [
+            "Identify user account involved.",
+            "Review sudo/auth logs.",
+            "Check command executed.",
+            "Verify whether the user is authorized for privilege activity.",
+            "Check login source before privilege action.",
+            "Correlate with previous brute-force or suspicious login alerts.",
+            "Escalate if activity is unauthorized or follows suspicious login."
+        ],
+        "containment_recommendation": "Disable suspicious account in lab and preserve evidence logs.",
+        "escalation_condition": "Escalate if unauthorized sudo/root activity is observed."
+    },
+    "default": {
+        "playbook_id": "PB-000",
+        "name": "Generic SOC L1 Alert Triage Playbook",
+        "l1_steps": [
+            "Validate alert details.",
+            "Check affected host and user.",
+            "Review related logs.",
+            "Check previous activity from same source.",
+            "Document evidence.",
+            "Decide true positive or false positive.",
+            "Escalate if business risk is high."
+        ],
+        "containment_recommendation": "Monitor and collect additional evidence.",
+        "escalation_condition": "Escalate if suspicious activity is confirmed."
+    }
+}
