@@ -1,382 +1,89 @@
-
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>SentinelOps-AI SOC Dashboard</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-* {
-    box-sizing: border-box;
-}
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #080d1c;
-    color: #e5e7eb;
-}
-header {
-    padding: 24px;
-    background: linear-gradient(135deg, #111827, #1f2937);
-    border-bottom: 1px solid #374151;
-}
-header h1 {
-    margin: 0 0 8px 0;
-    font-size: 28px;
-}
-header p {
-    color: #9ca3af;
-    margin: 4px 0;
-}
-.container {
-    width: 94%;
-    max-width: 1350px;
-    margin: 20px auto;
-}
-.grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
-}
-.card, .section {
-    background: #111827;
-    border: 1px solid #374151;
-    border-radius: 14px;
-    padding: 18px;
-    margin-bottom: 18px;
-}
-.card h3 {
-    color: #9ca3af;
-    font-size: 13px;
-    margin: 0 0 8px 0;
-    text-transform: uppercase;
-}
-.value {
-    font-size: 30px;
-    font-weight: bold;
-}
-h2 {
-    margin-top: 0;
-}
-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-}
-th, td {
-    padding: 10px;
-    border-bottom: 1px solid #374151;
-    text-align: left;
-}
-th {
-    background: #1f2937;
-    color: white;
-}
-tr:hover {
-    background: #1f2937;
-}
-.badge {
-    padding: 5px 10px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: bold;
-    display: inline-block;
-}
-.critical {
-    background: #7f1d1d;
-    color: #fecaca;
-}
-.high {
-    background: #92400e;
-    color: #fde68a;
-}
-.medium {
-    background: #1e3a8a;
-    color: #bfdbfe;
-}
-.low {
-    background: #064e3b;
-    color: #a7f3d0;
-}
-.open {
-    background: #7f1d1d;
-    color: #fecaca;
-}
-.closed {
-    background: #064e3b;
-    color: #a7f3d0;
-}
-.new {
-    background: #1e3a8a;
-    color: #bfdbfe;
-}
-.investigating {
-    background: #92400e;
-    color: #fde68a;
-}
-.neutral {
-    background: #374151;
-    color: #e5e7eb;
-}
-.notice {
-    background: #1f2937;
-    border-left: 5px solid #ef4444;
-    border-radius: 12px;
-    padding: 16px;
-}
-.two {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-}
-.mini-list {
-    list-style: none;
-    padding: 0;
-}
-.mini-list li {
-    display: flex;
-    justify-content: space-between;
-    border-bottom: 1px solid #374151;
-    padding: 9px 0;
-}
-code {
-    background: #020617;
-    color: #93c5fd;
-    padding: 2px 6px;
-    border-radius: 5px;
-}
-.footer {
-    text-align: center;
-    color: #9ca3af;
-    padding: 25px;
-}
-@media(max-width: 900px) {
-    .grid, .two {
-        grid-template-columns: 1fr;
-    }
-    table {
-        font-size: 12px;
-    }
-    th, td {
-        padding: 7px;
-    }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="SentinelOps-AI — GitHub-only SOC L1 Command Center">
+  <title>SentinelOps-AI | SOC L1 Command Center</title>
+  <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
+  <div id="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">S</div>
+        <div><strong>SentinelOps-AI</strong><span>SOC L1 Command Center</span></div>
+      </div>
+      <div class="top-actions">
+        <span class="runtime"><i></i> GitHub-only runtime</span>
+        <button id="resetState" class="ghost-btn" title="Clear browser-only analyst changes">Reset session</button>
+      </div>
+    </header>
 
-<header>
-    <h1>SentinelOps-AI Command Center</h1>
-    <p>AI-powered SOC L1 dashboard for SIEM alert triage, incident tracking, MITRE mapping, and response recommendation.</p>
-    <p>Generated at: 2026-09-25 15:19:11</p>
-</header>
-
-<div class="container">
-
-    <div class="grid">
-        <div class="card"><h3>Total Alerts</h3><div class="value">3</div></div>
-        <div class="card"><h3>Critical Alerts</h3><div class="value">2</div></div>
-        <div class="card"><h3>High Alerts</h3><div class="value">1</div></div>
-        <div class="card"><h3>Average Risk</h3><div class="value">89.0</div></div>
-        <div class="card"><h3>Medium Alerts</h3><div class="value">0</div></div>
-        <div class="card"><h3>Low Alerts</h3><div class="value">0</div></div>
-        <div class="card"><h3>Open Incidents</h3><div class="value">3</div></div>
-        <div class="card"><h3>Escalations</h3><div class="value">2</div></div>
-    </div>
-
-    <div class="section">
-        <h2>In-App Critical Notifications</h2>
-        <div class="notice">
-            <ul>
-        <li>
-            <b>Critical</b> alert:
-            SSH Brute Force Detected
-            from <code>192.168.56.105</code>
-            to <code>ubuntu-server</code>
-            | Score: <b>100/100</b>
-        </li>
-        
-        <li>
-            <b>High</b> alert:
-            Multiple Ports Scanned
-            from <code>192.168.56.110</code>
-            to <code>web-server</code>
-            | Score: <b>67/100</b>
-        </li>
-        
-        <li>
-            <b>Critical</b> alert:
-            Suspicious Sudo Activity
-            from <code>192.168.56.105</code>
-            to <code>ubuntu-server</code>
-            | Score: <b>100/100</b>
-        </li>
-        </ul>
+    <div class="layout">
+      <aside class="sidebar">
+        <button class="nav active" data-view="overview">Overview</button>
+        <button class="nav" data-view="alerts">Alert Triage</button>
+        <button class="nav" data-view="incidents">Incidents</button>
+        <button class="nav" data-view="playbooks">Playbooks</button>
+        <button class="nav" data-view="mitre">MITRE ATT&CK</button>
+        <div class="side-note">
+          <b>Static architecture</b>
+          <p>Data and logic execute in the browser. Analyst notes, verdicts and case status are stored locally in this browser.</p>
         </div>
+      </aside>
+
+      <main class="content">
+        <section id="overview" class="view active">
+          <div class="page-head">
+            <div><p class="eyebrow">COMMAND CENTER</p><h1>SOC Overview</h1><p class="muted">Alert triage, risk scoring, incident correlation and L1 response guidance.</p></div>
+            <button class="primary-btn" data-view-target="alerts">Open alert queue →</button>
+          </div>
+          <div id="metrics" class="metric-grid"></div>
+          <div class="grid-2">
+            <div class="panel"><div class="panel-head"><h2>Risk distribution</h2><span class="muted">Current alert set</span></div><div id="riskChart" class="bars"></div></div>
+            <div class="panel"><div class="panel-head"><h2>Priority queue</h2><span class="muted">Highest risk first</span></div><div id="priorityQueue"></div></div>
+          </div>
+          <div class="panel"><div class="panel-head"><h2>Recent alerts</h2><span class="muted">Select an alert for investigation</span></div><div id="recentAlerts"></div></div>
+        </section>
+
+        <section id="alerts" class="view">
+          <div class="page-head"><div><p class="eyebrow">TRIAGE</p><h1>Alert Queue</h1><p class="muted">Client-side risk scoring is recalculated from the repository's sample alert data.</p></div></div>
+          <div class="toolbar">
+            <input id="alertSearch" class="input" placeholder="Search alert, rule, IP, host, MITRE…">
+            <select id="riskFilter" class="input"><option value="all">All risk levels</option><option>Critical</option><option>High</option><option>Medium</option><option>Low</option></select>
+          </div>
+          <div id="alertTable" class="table-wrap"></div>
+        </section>
+
+        <section id="alertDetail" class="view">
+          <div class="page-head"><div><button class="back-btn" data-view-target="alerts">← Alert queue</button><p class="eyebrow">INVESTIGATION</p><h1 id="alertDetailTitle">Alert</h1><p id="alertDetailMeta" class="muted"></p></div></div>
+          <div id="alertDetailBody"></div>
+        </section>
+
+        <section id="incidents" class="view">
+          <div class="page-head"><div><p class="eyebrow">CASE MANAGEMENT</p><h1>Incident Cases</h1><p class="muted">Demo cases from Phase 1 plus browser-local analyst changes.</p></div></div>
+          <div id="incidentTable" class="table-wrap"></div>
+        </section>
+
+        <section id="incidentDetail" class="view">
+          <div class="page-head"><div><button class="back-btn" data-view-target="incidents">← Incident cases</button><p class="eyebrow">CASE FILE</p><h1 id="incidentDetailTitle">Incident</h1><p id="incidentDetailMeta" class="muted"></p></div></div>
+          <div id="incidentDetailBody"></div>
+        </section>
+
+        <section id="playbooks" class="view">
+          <div class="page-head"><div><p class="eyebrow">RESPONSE</p><h1>SOC L1 Playbooks</h1><p class="muted">Investigation guidance shipped with the project.</p></div></div>
+          <div id="playbookGrid" class="playbook-grid"></div>
+        </section>
+
+        <section id="mitre" class="view">
+          <div class="page-head"><div><p class="eyebrow">THREAT CONTEXT</p><h1>MITRE ATT&CK Coverage</h1><p class="muted">Techniques represented by the current sample alert set.</p></div></div>
+          <div id="mitreGrid" class="mitre-grid"></div>
+        </section>
+      </main>
     </div>
-
-    <div class="section">
-        <h2>SOC Analyst Interpretation</h2>
-        <p>
-        This dashboard helps a SOC L1 analyst quickly decide which alerts need investigation first.
-        Prioritize critical risk, successful login after failed attempts, privilege escalation, repeated source IP activity,
-        and incidents requiring escalation.
-        </p>
-    </div>
-
-    <div class="section">
-        <h2>Alert Dashboard</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Alert ID</th>
-                    <th>Timestamp</th>
-                    <th>Rule</th>
-                    <th>Risk</th>
-                    <th>Score</th>
-                    <th>Source IP</th>
-                    <th>Host</th>
-                    <th>User</th>
-                    <th>MITRE ID</th>
-                    <th>Technique</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-    <tr>
-        <td>ALERT-001</td>
-        <td>2026-06-23 10:15:21</td>
-        <td>SSH Brute Force Detected</td>
-        <td><span class="badge critical">Critical</span></td>
-        <td>100/100</td>
-        <td>192.168.56.105</td>
-        <td>ubuntu-server</td>
-        <td>admin</td>
-        <td>T1110</td>
-        <td>Brute Force</td>
-        <td><span class="badge new">New</span></td>
-    </tr>
-    
-    <tr>
-        <td>ALERT-002</td>
-        <td>2026-06-23 10:28:44</td>
-        <td>Multiple Ports Scanned</td>
-        <td><span class="badge high">High</span></td>
-        <td>67/100</td>
-        <td>192.168.56.110</td>
-        <td>web-server</td>
-        <td>-</td>
-        <td>T1046</td>
-        <td>Network Service Discovery</td>
-        <td><span class="badge new">New</span></td>
-    </tr>
-    
-    <tr>
-        <td>ALERT-003</td>
-        <td>2026-06-23 11:05:10</td>
-        <td>Suspicious Sudo Activity</td>
-        <td><span class="badge critical">Critical</span></td>
-        <td>100/100</td>
-        <td>192.168.56.105</td>
-        <td>ubuntu-server</td>
-        <td>test</td>
-        <td>T1548</td>
-        <td>Abuse Elevation Control Mechanism</td>
-        <td><span class="badge new">New</span></td>
-    </tr>
-    </tbody>
-        </table>
-    </div>
-
-    <div class="section">
-        <h2>Incident Case Dashboard</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Case ID</th>
-                    <th>Title</th>
-                    <th>Status</th>
-                    <th>Priority</th>
-                    <th>Severity</th>
-                    <th>Score</th>
-                    <th>Source IP</th>
-                    <th>Host</th>
-                    <th>MITRE</th>
-                    <th>Escalate</th>
-                </tr>
-            </thead>
-            <tbody>
-    <tr>
-        <td>INC-001</td>
-        <td>SSH Brute Force Detected</td>
-        <td><span class="badge open">Open</span></td>
-        <td>P1 - Critical</td>
-        <td><span class="badge critical">Critical</span></td>
-        <td>100/100</td>
-        <td>192.168.56.105</td>
-        <td>ubuntu-server</td>
-        <td>T1110</td>
-        <td>True</td>
-    </tr>
-    
-    <tr>
-        <td>INC-002</td>
-        <td>Multiple Ports Scanned</td>
-        <td><span class="badge open">Open</span></td>
-        <td>P2 - High</td>
-        <td><span class="badge high">High</span></td>
-        <td>67/100</td>
-        <td>192.168.56.110</td>
-        <td>web-server</td>
-        <td>T1046</td>
-        <td>False</td>
-    </tr>
-    
-    <tr>
-        <td>INC-003</td>
-        <td>Suspicious Sudo Activity</td>
-        <td><span class="badge open">Open</span></td>
-        <td>P1 - Critical</td>
-        <td><span class="badge critical">Critical</span></td>
-        <td>100/100</td>
-        <td>192.168.56.105</td>
-        <td>ubuntu-server</td>
-        <td>T1548</td>
-        <td>True</td>
-    </tr>
-    </tbody>
-        </table>
-    </div>
-
-    <div class="two">
-        <div class="section">
-            <h2>Top Source IPs</h2>
-            <ul class="mini-list"><li><span>192.168.56.105</span><b>2</b></li><li><span>192.168.56.110</span><b>1</b></li></ul>
-        </div>
-
-        <div class="section">
-            <h2>Top Affected Hosts</h2>
-            <ul class="mini-list"><li><span>ubuntu-server</span><b>2</b></li><li><span>web-server</span><b>1</b></li></ul>
-        </div>
-    </div>
-
-    <div class="two">
-        <div class="section">
-            <h2>Top MITRE Techniques</h2>
-            <ul class="mini-list"><li><span>Brute Force</span><b>1</b></li><li><span>Network Service Discovery</span><b>1</b></li><li><span>Abuse Elevation Control Mechanism</span><b>1</b></li></ul>
-        </div>
-
-        <div class="section">
-            <h2>Top Event Types</h2>
-            <ul class="mini-list"><li><span>authentication_failure</span><b>1</b></li><li><span>network_scan</span><b>1</b></li><li><span>privilege_escalation</span><b>1</b></li></ul>
-        </div>
-    </div>
-
-</div>
-
-<div class="footer">
-    SentinelOps-AI Command Center | SOC L1 Learning + Resume Project
-</div>
-
+  </div>
+  <div id="toast" class="toast"></div>
+  <script src="./app.js"></script>
 </body>
 </html>
