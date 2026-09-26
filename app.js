@@ -1,0 +1,72 @@
+const state={alerts:[],incidents:[],playbooks:{},local:JSON.parse(localStorage.getItem("sentinelops-session")||"{}")};
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const save=()=>localStorage.setItem("sentinelops-session",JSON.stringify(state.local));
+const toast=m=>{const t=$("#toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1800)};
+const esc=s=>String(s??"-").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function scoreAlert(alert,all){
+  let score=0,reasons=[];const rl=Number(alert.rule_level||0);score+=rl*7;reasons.push(`Rule level ${rl} contributed ${rl*7} points.`);
+  const sev=String(alert.severity||"").toLowerCase(),sp={critical:20,high:15,medium:8,low:3};if(sp[sev]){score+=sp[sev];reasons.push(`${sev[0].toUpperCase()+sev.slice(1)} severity contributed ${sp[sev]} points.`)}
+  if(alert.successful_login_after_failures===true){score+=15;reasons.push("Successful login after failures increased risk.")}
+  const fa=Number(alert.failed_attempts||0);if(fa>=100)score+=15;else if(fa>=50)score+=10;else if(fa>=10)score+=5;
+  const tactic=String(alert.mitre_tactic||"").toLowerCase();if(["credential access","privilege escalation","persistence","defense evasion","exfiltration","command and control"].includes(tactic))score+=10;else if(["discovery","reconnaissance","initial access","execution"].includes(tactic))score+=5;
+  const ip=alert.source_ip||"-",cnt=all.filter(a=>(a.source_ip||"-")===ip).length;if(cnt>=3)score+=10;else if(cnt===2)score+=5;
+  const event=String(alert.event_type||"").toLowerCase();if(event==="privilege_escalation")score+=15;else if(event==="authentication_failure")score+=8;else if(event==="network_scan")score+=5;
+  score=Math.min(score,100);const level=score>=85?"Critical":score>=65?"High":score>=35?"Medium":"Low";
+  return {...alert,ai_risk_score:score,ai_risk_level:level,risk_reasons:reasons};
+}
+function enrich(){state.alerts=state.rawAlerts.map(a=>scoreAlert(a,state.rawAlerts));}
+function caseForAlert(a){
+ const existing=state.incidents.find(i=>i.linked_alert_id===a.alert_id);if(existing)return existing;
+ return {case_id:"INC-"+a.alert_id.replace("ALERT-",""),linked_alert_id:a.alert_id,created_at:new Date().toISOString(),updated_at:new Date().toISOString(),case_title:a.rule_name,case_status:"Open",priority:a.ai_risk_score>=85?"P1 - Critical":a.ai_risk_score>=65?"P2 - High":"P3 - Medium",severity:a.ai_risk_level,ai_risk_score:a.ai_risk_score,incident_type:a.event_type,affected_host:a.target_host||"-",source_ip:a.source_ip||"-",username:a.username||"-",mitre_id:a.mitre_id||"-",mitre_tactic:a.mitre_tactic||"-",mitre_technique:a.mitre_technique||"-",soc_decision:a.soc_decision||"Investigate",recommended_action:a.recommended_action||"-",ai_explanation:a.ai_explanation||"-",assigned_to:"SOC L1 Analyst",analyst_notes:"",final_verdict:"Pending"}}
+function allCases(){const base=state.baseIncidents.map(i=>({...i}));for(const k of Object.values(state.local.incidents||{})){const idx=base.findIndex(i=>i.case_id===k.case_id);if(idx>=0)base[idx]={...base[idx],...k};else base.push(k)}return base}
+function badge(v){const c=String(v).toLowerCase().replace(/\s+/g,"-");return `<span class="badge ${c}">${esc(v)}</span>`}
+function show(view){$$(".view").forEach(x=>x.classList.remove("active"));$("#"+view).classList.add("active");$$(".nav").forEach(x=>x.classList.toggle("active",x.dataset.view===view));scrollTo(0,0)}
+function metrics(){
+ const a=state.alerts,c=allCases(),avg=a.length?(a.reduce((s,x)=>s+x.ai_risk_score,0)/a.length).toFixed(1):"0";
+ $("#metrics").innerHTML=[["Total alerts",a.length,"repository sample"],["Critical",a.filter(x=>x.ai_risk_level==="Critical").length,"risk ≥ 85"],["High",a.filter(x=>x.ai_risk_level==="High").length,"risk 65–84"],["Average risk",avg,"0–100 score"],["Open cases",c.filter(x=>x.case_status!=="Closed").length,"browser + baseline"],["Escalations",c.filter(x=>x.priority==="P1 - Critical").length,"P1 cases"],["MITRE techniques",new Set(a.map(x=>x.mitre_id).filter(Boolean)).size,"sample coverage"],["Session changes",Object.keys(state.local.incidents||{}).length,"stored locally"]].map(x=>`<div class="metric"><div class="metric-label">${x[0]}</div><div class="metric-value">${x[1]}</div><div class="metric-sub">${x[2]}</div></div>`).join("");
+}
+function overview(){
+ const counts={Critical:0,High:0,Medium:0,Low:0};state.alerts.forEach(a=>counts[a.ai_risk_level]++);
+ $("#riskChart").innerHTML=Object.entries(counts).map(([k,v])=>`<div class="bar-item"><div class="bar-track"><div class="bar ${k.toLowerCase()}" style="height:${Math.max(6,v/Math.max(1,state.alerts.length)*100)}%"></div></div><div class="bar-count">${v}</div><div class="bar-label">${k}</div></div>`).join("");
+ $("#priorityQueue").innerHTML=[...state.alerts].sort((a,b)=>b.ai_risk_score-a.ai_risk_score).map(a=>`<div class="queue-row"><div><div class="title">${esc(a.rule_name)}</div><div class="sub">${esc(a.alert_id)} · ${esc(a.mitre_id)}</div></div><div>${badge(a.ai_risk_level)} <b>${a.ai_risk_score}</b></div></div>`).join("");
+ $("#recentAlerts").innerHTML=state.alerts.map(a=>`<div class="mini-row"><div><button class="link-btn" data-alert="${a.alert_id}">${esc(a.rule_name)}</button><div class="sub">${esc(a.source_ip)} → ${esc(a.target_host)}</div></div><div>${badge(a.ai_risk_level)}</div></div>`).join("");
+}
+function renderAlerts(){
+ const q=($("#alertSearch")?.value||"").toLowerCase(),f=$("#riskFilter")?.value||"all";
+ const rows=state.alerts.filter(a=>{const hay=JSON.stringify(a).toLowerCase();return(!q||hay.includes(q))&&(f==="all"||a.ai_risk_level===f)});
+ $("#alertTable").innerHTML=`<table><thead><tr><th>ID</th><th>Rule</th><th>Risk</th><th>Score</th><th>Source</th><th>Host</th><th>MITRE</th><th>Status</th><th></th></tr></thead><tbody>${rows.map(a=>`<tr><td><b>${esc(a.alert_id)}</b></td><td>${esc(a.rule_name)}</td><td>${badge(a.ai_risk_level)}</td><td><b>${a.ai_risk_score}</b>/100</td><td>${esc(a.source_ip)}</td><td>${esc(a.target_host)}</td><td>${esc(a.mitre_id)} · ${esc(a.mitre_technique)}</td><td>${esc(a.status)}</td><td><button class="link-btn" data-alert="${a.alert_id}">Investigate</button></td></tr>`).join("")}</tbody></table>`;
+}
+function renderIncidents(){
+ const rows=allCases();$("#incidentTable").innerHTML=`<table><thead><tr><th>Case</th><th>Title</th><th>Status</th><th>Priority</th><th>Risk</th><th>Host</th><th>MITRE</th><th>Verdict</th><th></th></tr></thead><tbody>${rows.map(i=>`<tr><td><b>${esc(i.case_id)}</b></td><td>${esc(i.case_title)}</td><td>${badge(i.case_status)}</td><td>${esc(i.priority)}</td><td>${i.ai_risk_score}/100</td><td>${esc(i.affected_host)}</td><td>${esc(i.mitre_id)}</td><td>${esc(i.final_verdict)}</td><td><button class="link-btn" data-incident="${i.case_id}">Open case</button></td></tr>`).join("")}</tbody></table>`;
+}
+function openAlert(id){
+ const a=state.alerts.find(x=>x.alert_id===id);if(!a)return;
+ $("#alertDetailTitle").textContent=a.rule_name;$("#alertDetailMeta").textContent=`${a.alert_id} · ${a.timestamp} · ${a.source_ip} → ${a.target_host}`;
+ const c=caseForAlert(a);
+ $("#alertDetailBody").innerHTML=`<div class="detail-grid"><div><div class="panel"><div class="panel-head"><h2>Risk assessment</h2>${badge(a.ai_risk_level)}</div><div class="metric-value">${a.ai_risk_score}<span class="muted">/100</span></div><p class="muted">${esc(a.ai_explanation||"Risk calculated client-side from the Phase 1 scoring rules.")}</p><h3>Risk factors</h3>${(a.risk_reasons||[]).map(r=>`<div class="reason">${esc(r)}</div>`).join("")}</div><div class="panel"><h2>Evidence</h2><div class="kv"><b>Event</b><span>${esc(a.event_type)}</span></div><div class="kv"><b>Username</b><span>${esc(a.username)}</span></div><div class="kv"><b>Failed attempts</b><span>${esc(a.failed_attempts||0)}</span></div><div class="kv"><b>MITRE</b><span>${esc(a.mitre_id)} · ${esc(a.mitre_tactic)} · ${esc(a.mitre_technique)}</span></div><div class="kv"><b>Command / ports</b><span>${esc(a.command||a.ports_touched||"-")}</span></div></div></div><div><div class="panel"><h2>SOC decision</h2><p>${esc(a.soc_decision||"Investigate")}</p><p class="muted">${esc(a.recommended_action||"-")}</p><div class="action-row"><button class="action-btn primary" data-create-case="${a.alert_id}">Create / open case</button><button class="action-btn" data-view-target="playbooks">View playbooks</button></div></div><div class="panel"><h2>Linked case</h2><p><b>${esc(c.case_id)}</b> · ${badge(c.priority)}</p><p class="muted">Case state is stored in this browser session when changed.</p><button class="link-btn" data-incident="${c.case_id}">Open case →</button></div></div></div>`;
+ show("alertDetail");
+}
+function openIncident(id){
+ let c=allCases().find(x=>x.case_id===id);if(!c)return;
+ $("#incidentDetailTitle").textContent=c.case_title;$("#incidentDetailMeta").textContent=`${c.case_id} · ${c.priority} · ${c.affected_host}`;
+ const note=(state.local.incidents||{})[id]?.analyst_notes??c.analyst_notes??"",verdict=(state.local.incidents||{})[id]?.final_verdict??c.final_verdict??"Pending",status=(state.local.incidents||{})[id]?.case_status??c.case_status??"Open";
+ $("#incidentDetailBody").innerHTML=`<div class="detail-grid"><div><div class="panel"><div class="panel-head"><h2>Case summary</h2>${badge(status)}</div><div class="kv"><b>Priority</b><span>${esc(c.priority)}</span></div><div class="kv"><b>Risk</b><span>${c.ai_risk_score}/100 · ${badge(c.severity)}</span></div><div class="kv"><b>Alert</b><span>${esc(c.linked_alert_id)}</span></div><div class="kv"><b>Source</b><span>${esc(c.source_ip)}</span></div><div class="kv"><b>User</b><span>${esc(c.username)}</span></div><div class="kv"><b>MITRE</b><span>${esc(c.mitre_id)} · ${esc(c.mitre_technique)}</span></div><div class="kv"><b>Decision</b><span>${esc(c.soc_decision)}</span></div></div><div class="panel"><h2>AI explanation</h2><p class="muted">${esc(c.ai_explanation)}</p><h3>Recommended action</h3><p>${esc(c.recommended_action)}</p></div></div><div><div class="panel"><h2>Analyst actions</h2><label class="sub">Case status</label><select id="caseStatus" class="input" style="width:100%;margin:6px 0 12px"><option ${status==="Open"?"selected":""}>Open</option><option ${status==="Investigating"?"selected":""}>Investigating</option><option ${status==="Closed"?"selected":""}>Closed</option></select><label class="sub">Final verdict</label><select id="caseVerdict" class="input" style="width:100%;margin:6px 0 12px"><option ${verdict==="Pending"?"selected":""}>Pending</option><option ${verdict==="True Positive"?"selected":""}>True Positive</option><option ${verdict==="False Positive"?"selected":""}>False Positive</option></select><label class="sub">Analyst notes</label><textarea id="caseNotes" class="textarea" placeholder="Document evidence and investigation outcome…">${esc(note)}</textarea><div class="action-row"><button class="action-btn primary" data-save-case="${id}">Save analyst state</button><button class="action-btn" data-view-target="playbooks">Open playbooks</button></div></div><div class="panel"><h2>Learning note</h2><p class="muted">This browser-only build demonstrates the analyst workflow without requiring a server, database or paid API. It is not a live SIEM.</p></div></div></div>`;
+ show("incidentDetail");
+}
+async function boot(){
+ const [raw,inc,pb]=await Promise.all([fetch("./sample_data/alerts_sample.json").then(r=>r.json()),fetch("./database/incidents_db.json").then(r=>r.json()),fetch("./incident_playbooks/default_soc_playbooks.json").then(r=>r.json())]);
+ state.rawAlerts=raw;state.baseIncidents=inc;state.playbooks=pb;enrich();renderAll();
+}
+function renderPlaybooks(){$("#playbookGrid").innerHTML=Object.entries(state.playbooks).map(([k,p])=>`<article class="playbook"><p class="eyebrow">${esc(p.playbook_id)}</p><h3>${esc(p.name)}</h3><ol>${(p.l1_steps||[]).map(s=>`<li>${esc(s)}</li>`).join("")}</ol><p class="sub"><b>Containment:</b> ${esc(p.containment_recommendation||"-")}</p><p class="sub"><b>Escalation:</b> ${esc(p.escalation_condition||"-")}</p></article>`).join("")}
+function renderMitre(){const map={};state.alerts.forEach(a=>{if(!a.mitre_id)return;(map[a.mitre_id]??={id:a.mitre_id,technique:a.mitre_technique,tactic:a.mitre_tactic,count:0,alerts:[]});map[a.mitre_id].count++;map[a.mitre_id].alerts.push(a.alert_id)});$("#mitreGrid").innerHTML=Object.values(map).map(x=>`<article class="mitre-card"><div class="mitre-id">${esc(x.id)}</div><h3>${esc(x.technique)}</h3><p class="muted">Tactic: ${esc(x.tactic)}</p><p>Observed in <b>${x.count}</b> sample alert(s): ${x.alerts.join(", ")}</p></article>`).join("")}
+function renderAll(){metrics();overview();renderAlerts();renderIncidents();renderPlaybooks();renderMitre()}
+document.addEventListener("click",e=>{
+ const nav=e.target.closest("[data-view], [data-view-target]");if(nav){const v=nav.dataset.view||nav.dataset.viewTarget;if(v)show(v)}
+ const ab=e.target.closest("[data-alert]");if(ab)openAlert(ab.dataset.alert);
+ const ib=e.target.closest("[data-incident]");if(ib)openIncident(ib.dataset.incident);
+ const cc=e.target.closest("[data-create-case]");if(cc){const a=state.alerts.find(x=>x.alert_id===cc.dataset.createCase);const c=caseForAlert(a);state.local.incidents=state.local.incidents||{};state.local.incidents[c.case_id]={...c};save();toast("Case opened in browser session");openIncident(c.case_id)}
+ const sc=e.target.closest("[data-save-case]");if(sc){const id=sc.dataset.saveCase;state.local.incidents=state.local.incidents||{};state.local.incidents[id]={...(allCases().find(x=>x.case_id===id)||{}),case_status:$("#caseStatus").value,final_verdict:$("#caseVerdict").value,analyst_notes:$("#caseNotes").value,updated_at:new Date().toISOString()};save();toast("Analyst state saved locally");renderAll();openIncident(id)}
+});
+$("#alertSearch").addEventListener("input",renderAlerts);$("#riskFilter").addEventListener("change",renderAlerts);
+$("#resetState").addEventListener("click",()=>{if(confirm("Clear browser-only analyst changes?")){state.local={};save();renderAll();toast("Session reset")}});
+boot().catch(err=>{$(".content").innerHTML=`<div class="panel"><h2>Runtime error</h2><p class="muted">${esc(err.message)}</p><p>Open this site through GitHub Pages or a local HTTP server. Browser file:// mode may block JSON loading.</p></div>`});
