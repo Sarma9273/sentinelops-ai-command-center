@@ -1,49 +1,39 @@
 # SentinelOps-AI Command Center
 
-AI-assisted SOC L1 command-center project. This repository is the canonical development source for the application.
+GitHub-only, zero-cost SOC L1 Command Center prototype. GitHub is the canonical source and GitHub Pages is the runtime.
 
-## Phase 1 implemented
+## What is implemented
 
-- Phase 1.1 — Project workspace and sample SOC alerts
-- Phase 1.2 — AI risk scoring and alert enrichment
-- Phase 1.3 — Automatic incident case generation and SOC playbooks
-- Phase 1.4 — SOC dashboard data, metrics, tables and charts
-- Phase 1.5 — Static SOC web dashboard
+- Phase 1.1 — SOC workspace and sample alerts
+- Phase 1.2 — Risk scoring and alert enrichment
+- Phase 1.3 — Incident case generation and SOC L1 playbooks
+- Phase 1.4 — Dashboard metrics and investigation data
+- Phase 1.5 — Static SOC dashboard
+- **Phase 2.1 — Browser-native product shell**
+  - Interactive alert triage
+  - Client-side risk-score recalculation using the Phase 1 rules
+  - Alert investigation view
+  - Incident case view
+  - Analyst notes, status and verdict stored in browser localStorage
+  - Playbook and MITRE ATT&CK views
+  - Responsive SOC UI
+  - No Python server, external database, paid API or external hosting required
 
-## Current capabilities
+## GitHub-only architecture
 
-- Sample SOC/SIEM alerts
-- Risk scoring and risk-level classification
-- SOC decision and recommended-action generation
-- MITRE ATT&CK mapping fields
-- Automatic incident case generation
-- SOC L1 investigation playbooks
-- Incident reports
-- Static browser SOC dashboard
-- Mobile-responsive dashboard layout
-
-## Repository structure
-
-```text
-.
-├── .github/workflows/       # GitHub Pages deployment
-├── backend/                 # Incident-case generation logic
-├── ml_engine/               # Risk scoring engine
-├── sample_data/             # Sample and enriched alerts
-├── database/                # Demo incident data
-├── incident_playbooks/      # SOC L1 playbooks
-├── reports/                 # Example generated incident reports
-├── docs/                    # Project documentation
-├── learning_notes/          # Phase-by-phase development notes
-├── tests/                   # Validation tests
-├── index.html               # GitHub Pages entry point
-├── README.md
-├── LICENSE
-├── .gitignore
-├── .env.example
-├── requirements.txt
-└── project_manifest.json
 ```
+GitHub repository
+      ↓
+GitHub Pages
+      ↓
+index.html + styles.css + app.js
+      ↓
+Browser-side scoring / cases / playbooks
+      ↓
+localStorage for analyst session state
+```
+
+The repository's Python modules remain useful as the research/reference implementation. The deployed product runtime is deliberately browser-native so the application can stay on GitHub Pages at $0.
 
 ## Run locally
 
@@ -53,14 +43,14 @@ python -m http.server 8000
 
 Open `http://localhost:8000/`.
 
-## GitHub Pages
+## Deploy
 
-The root `index.html` is the current static demonstration entry point. GitHub Actions publishes it through `.github/workflows/pages.yml`.
+The existing `.github/workflows/pages.yml` publishes the repository through GitHub Pages on pushes to `main`.
 
-## Development direction
+## Important scope
 
-GitHub is the canonical source for application development. Google Colab is retained outside this repository for experimentation and research when required. The next application phase should extend the backend, API, frontend and integrations from this repository.
+This is a self-contained SOC learning/demo product, not a live SIEM. GitHub Pages cannot act as a persistent Python API, database, Wazuh manager, or real-time ingestion server. Those integrations require a separate runtime and are intentionally outside this zero-cost GitHub-only build.
 
 ## Security
 
-Never commit API keys, passwords, access tokens, certificates, or production credentials. Use local `.env` files and keep only non-secret configuration in `.env.example`.
+Do not commit API keys, passwords, access tokens, certificates or production credentials.
