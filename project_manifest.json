@@ -1,16 +1,13 @@
 {
-  "project_name": "SentinelOps-AI Command Center",
-  "current_phase": "Phase 1.5 - Static SOC Web Dashboard",
-  "status": "Phase 1 complete - GitHub development baseline",
-  "canonical_source": "GitHub repository",
-  "colab_role": "External ML experimentation and research",
-  "phase_coverage": [
-    "Phase 1.1",
-    "Phase 1.2",
-    "Phase 1.3",
-    "Phase 1.4",
-    "Phase 1.5"
-  ],
-  "important_runtime_entrypoint": "index.html",
-  "repository_ready": true
+  "project_name":"SentinelOps-AI Command Center",
+  "current_phase":"Phase 2.1 - GitHub-only Browser Product",
+  "status":"Phase 1 complete; Phase 2.1 interactive zero-cost product baseline",
+  "canonical_source":"GitHub repository",
+  "runtime":"GitHub Pages + browser JavaScript",
+  "cost_model":"$0 / GitHub-only",
+  "colab_role":"External ML experimentation and research",
+  "phase_coverage":["Phase 1.1","Phase 1.2","Phase 1.3","Phase 1.4","Phase 1.5","Phase 2.1"],
+  "runtime_entrypoint":"index.html",
+  "state_storage":"browser localStorage",
+  "repository_ready":true
 }
