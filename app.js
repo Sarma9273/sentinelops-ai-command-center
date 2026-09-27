@@ -7,10 +7,10 @@ function scoreAlert(alert,all){
   let score=0,reasons=[];const rl=Number(alert.rule_level||0);score+=rl*7;reasons.push(`Rule level ${rl} contributed ${rl*7} points.`);
   const sev=String(alert.severity||"").toLowerCase(),sp={critical:20,high:15,medium:8,low:3};if(sp[sev]){score+=sp[sev];reasons.push(`${sev[0].toUpperCase()+sev.slice(1)} severity contributed ${sp[sev]} points.`)}
   if(alert.successful_login_after_failures===true){score+=15;reasons.push("Successful login after failures increased risk.")}
-  const fa=Number(alert.failed_attempts||0);if(fa>=100)score+=15;else if(fa>=50)score+=10;else if(fa>=10)score+=5;
-  const tactic=String(alert.mitre_tactic||"").toLowerCase();if(["credential access","privilege escalation","persistence","defense evasion","exfiltration","command and control"].includes(tactic))score+=10;else if(["discovery","reconnaissance","initial access","execution"].includes(tactic))score+=5;
-  const ip=alert.source_ip||"-",cnt=all.filter(a=>(a.source_ip||"-")===ip).length;if(cnt>=3)score+=10;else if(cnt===2)score+=5;
-  const event=String(alert.event_type||"").toLowerCase();if(event==="privilege_escalation")score+=15;else if(event==="authentication_failure")score+=8;else if(event==="network_scan")score+=5;
+  const fa=Number(alert.failed_attempts||0);if(fa>=100){score+=15;reasons.push("Failed-attempt volume contributed 15 points.")}else if(fa>=50){score+=10;reasons.push("Failed-attempt volume contributed 10 points.")}else if(fa>=10){score+=5;reasons.push("Failed-attempt volume contributed 5 points.")};
+  const tactic=String(alert.mitre_tactic||"").toLowerCase();if(["credential access","privilege escalation","persistence","defense evasion","exfiltration","command and control"].includes(tactic)){score+=10;reasons.push("High-risk MITRE tactic '"+alert.mitre_tactic+"' contributed 10 points.")}else if(["discovery","reconnaissance","initial access","execution"].includes(tactic)){score+=5;reasons.push("MITRE tactic '"+alert.mitre_tactic+"' contributed 5 points.")};
+  const ip=alert.source_ip||"-",cnt=all.filter(a=>(a.source_ip||"-")===ip).length;if(cnt>=3){score+=10;reasons.push("Source IP "+ip+" repetition contributed 10 points.")}else if(cnt===2){score+=5;reasons.push("Source IP "+ip+" repetition contributed 5 points.")};
+  const event=String(alert.event_type||"").toLowerCase();if(event==="privilege_escalation"){score+=15;reasons.push("Event type 'privilege_escalation' contributed 15 points.")}else if(event==="authentication_failure"){score+=8;reasons.push("Event type 'authentication_failure' contributed 8 points.")}else if(event==="network_scan"){score+=5;reasons.push("Event type 'network_scan' contributed 5 points.")};
   score=Math.min(score,100);const level=score>=85?"Critical":score>=65?"High":score>=35?"Medium":"Low";
   return {...alert,ai_risk_score:score,ai_risk_level:level,risk_reasons:reasons};
 }
