@@ -39,6 +39,9 @@ class ProjectIntegrityTests(unittest.TestCase):
         enriched = RiskScoringEngine(alerts).enrich_all_alerts()
         self.assertEqual([a["ai_risk_score"] for a in enriched], [100, 67, 100])
         self.assertEqual([a["ai_risk_level"] for a in enriched], ["Critical", "High", "Critical"])
+        for alert in enriched:
+            self.assertTrue(alert["risk_reasons"])
+            self.assertTrue(all("points" in reason or "increased risk" in reason for reason in alert["risk_reasons"]))
 
     def test_incident_generation_contract(self):
         import sys
