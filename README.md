@@ -1,14 +1,14 @@
 # SentinelOps-AI Command Center
 
-> A zero-cost, GitHub-only SOC L1 command center for **alert triage, explainable risk scoring, incident investigation, MITRE ATT&CK context, and playbook-driven response**.
+> **A zero-cost, GitHub-only SOC L1 command center for alert triage, explainable risk scoring, incident investigation, MITRE ATT&CK context, and playbook-driven response.**
 
 [![View Demo](https://img.shields.io/badge/View%20Demo-GitHub%20Pages-222?style=for-the-badge)](https://sarma9273.github.io/sentinelops-ai-command-center/)
 
-**[→ Open the Live Demo](https://sarma9273.github.io/sentinelops-ai-command-center/)**
+### [→ Open the Live Demo](https://sarma9273.github.io/sentinelops-ai-command-center/)
 
 ---
 
-## What is SentinelOps-AI?
+## 1. What is SentinelOps-AI?
 
 If you are new to cybersecurity, think of SentinelOps-AI as a **security control room**.
 
@@ -22,7 +22,7 @@ A SOC receives many security alerts. An analyst has to decide:
 - Which investigation procedure should be followed?
 - What should the analyst record?
 
-SentinelOps-AI brings these steps into one simple workflow:
+SentinelOps-AI brings these steps into one workflow:
 
 ~~~text
 Security Alert
@@ -33,7 +33,7 @@ Alert Triage
       ↓
 Investigation
       ↓
-MITRE ATT&CK
+MITRE ATT&CK Context
       ↓
 Incident Case
       ↓
@@ -48,43 +48,24 @@ Analyst Decision
 
 ---
 
-## Why was it built?
+# 2. Why was it built?
 
-Real SOC environments can be complex. This project provides a self-contained environment for learning and demonstrating the **SOC L1 investigation workflow** without requiring a paid cloud platform, external database, or live SIEM infrastructure.
+SOC analysts routinely work through large numbers of alerts and need a structured way to prioritize, investigate, document, and escalate them.
 
-The current release focuses on:
+This project provides a **self-contained SOC L1 investigation and demonstration environment** without requiring:
 
-- Explainable alert risk scoring
-- Alert prioritization
-- Incident case generation
-- MITRE ATT&CK context
-- SOC L1 investigation playbooks
-- Analyst notes, status, and verdicts
-- Browser-based investigation workflow
-- Automated validation through GitHub Actions
+- A paid cloud platform
+- A server-side database
+- A continuously running backend
+- A live SIEM installation
+- Paid APIs
+- External runtime infrastructure
 
----
-
-# Core Capabilities
-
-| Capability | What it does |
-|---|---|
-| **Alert Triage** | Displays and filters security alerts for investigation |
-| **Risk Scoring** | Produces an explainable 0–100 risk score |
-| **Risk Classification** | Categorizes alerts as Low, Medium, High, or Critical |
-| **Investigation** | Presents the evidence needed for L1 analysis |
-| **MITRE ATT&CK** | Provides tactic and technique context |
-| **Incident Cases** | Converts significant alerts into structured cases |
-| **SOC Playbooks** | Provides investigation and escalation checklists |
-| **Analyst Workflow** | Stores notes, status, and verdict in the browser |
-| **Dashboard** | Summarizes alerts, risk, incidents, and escalations |
-| **Validation** | Automatically checks project integrity before deployment |
+The current release is deliberately constrained to a **$0, GitHub-only architecture**.
 
 ---
 
-# For a Beginner
-
-## What happens when an alert arrives?
+# 3. For a Beginner: What Happens When an Alert Arrives?
 
 Suppose a server reports:
 
@@ -95,23 +76,41 @@ SentinelOps-AI can:
 1. Read the alert.
 2. Calculate a risk score.
 3. Assign a risk level.
-4. Explain why the score increased.
-5. Show the related MITRE ATT&CK technique.
+4. Explain the factors contributing to the score.
+5. Show the related MITRE ATT&CK context.
 6. Link the alert to an incident case.
 7. Provide an investigation playbook.
 8. Allow the analyst to record the investigation and decision.
 
-The goal is not to replace the analyst.
+The system does **not** replace the analyst.
 
-**The system organizes the evidence and workflow; the analyst makes the final determination.**
+**It organizes evidence and workflow; the analyst makes the final determination.**
 
 ---
 
-# How to Use It
+# 4. Core Capabilities
 
-## 1. Open the Command Center
+| Capability | Purpose |
+|---|---|
+| **Alert Triage** | Review, filter, prioritize, and open alerts |
+| **Explainable Risk Scoring** | Produce a deterministic 0–100 risk score with reasons |
+| **Risk Classification** | Map scores to Low, Medium, High, or Critical |
+| **Investigation View** | Present alert evidence and contextual fields |
+| **MITRE ATT&CK Context** | Associate alerts with tactics and techniques |
+| **Incident Generation** | Convert significant alerts into structured cases |
+| **SOC L1 Playbooks** | Provide investigation and escalation checklists |
+| **Analyst Workflow** | Record notes, case status, and final verdict |
+| **Dashboard** | Summarize alerts, risk, incidents, and escalations |
+| **Automated Validation** | Validate project contracts before deployment |
+| **GitHub Pages Deployment** | Publish the browser application without external hosting |
 
-Start from **Overview** to see:
+---
+
+# 5. How to Use It
+
+## Overview
+
+The dashboard summarizes:
 
 - Total alerts
 - Critical and High alerts
@@ -119,27 +118,29 @@ Start from **Overview** to see:
 - Open incidents
 - Escalations
 
-The dashboard uses the project's demonstration dataset.
+## Alert Triage
 
-## 2. Open Alert Triage
-
-Review the available alerts and their:
+Each alert can contain:
 
 - Alert ID
 - Timestamp
-- Rule
+- Rule name
+- Rule level
 - Severity
 - Source IP
-- Host
-- User
+- Target host
+- Username
 - Event type
-- MITRE mapping
+- MITRE ID
+- MITRE tactic
+- MITRE technique
 - Risk score
 - Risk level
+- Risk reasons
 
-## 3. Investigate an Alert
+## Investigation
 
-Open an alert and examine the evidence.
+Examples in the current dataset include:
 
 ### SSH brute-force activity
 
@@ -150,7 +151,7 @@ Check:
 - Failed-attempt volume
 - Successful authentication after failures
 - Authentication history
-- Whether the activity is authorized
+- Authorization/context
 
 ### Network scanning
 
@@ -160,7 +161,7 @@ Check:
 - Target host
 - Scanned ports
 - Exposed services
-- Whether the scan is authorized
+- Authorization/context
 - Related activity
 
 ### Privilege escalation
@@ -174,186 +175,537 @@ Check:
 - Login history
 - Related suspicious activity
 
-## 4. Review MITRE ATT&CK
+## MITRE ATT&CK
 
-Use the mapped tactic and technique to understand what type of behavior the alert represents and what related evidence should be investigated.
+Use the mapped tactic and technique to understand the behavior represented by the alert and determine what related evidence should be investigated.
 
-**A MITRE mapping provides context; it does not by itself prove that activity is malicious.**
+**A MITRE mapping is contextual evidence; it does not independently prove malicious activity.**
 
-## 5. Review the Incident
+## Incident Case
 
-Significant alerts can be represented as incident cases containing:
+Significant alerts can become structured cases containing:
 
 - Case ID
 - Linked alert
 - Priority
-- Risk
-- Affected asset
-- Source
+- Risk score
+- Severity
+- Affected host
+- Source IP
+- Username
 - MITRE mapping
-- Investigation guidance
-- Escalation condition
+- SOC decision
+- Recommended action
+- Investigation explanation
+- Assigned analyst
+- Analyst notes
+- Final verdict
 
-## 6. Follow the Playbook
+## Playbook
 
-Open **Playbooks** and use the relevant SOC L1 procedure.
+Use the corresponding playbook as a structured SOC L1 investigation checklist.
 
-The playbook acts as a structured investigation checklist.
+## Analyst Decision
 
-## 7. Record the Analyst Decision
-
-The browser workflow supports:
+The workflow supports:
 
 - Analyst notes
 - Case status
 - Final verdict
 
-These session changes are stored in browser **localStorage**, not a shared server database.
+Browser session changes are stored in **localStorage**. They are not shared through a server-side database.
 
 ---
 
-# Risk Scoring
+# 6. Professional / Technical Architecture
 
-The current browser product uses a **deterministic and explainable scoring model**.
-
-Risk can increase based on factors such as:
-
-- Rule level
-- Alert severity
-- Successful login after failed attempts
-- Failed-attempt volume
-- High-risk MITRE tactics
-- Repeated source IP activity
-- Security-relevant event type
-
-The score is capped at **100**.
+## 6.1 Runtime Architecture
 
 ~~~text
-85–100  → Critical
-65–84   → High
-35–64   → Medium
-0–34    → Low
+                         GitHub Repository
+                                │
+                                ↓
+                         GitHub Pages
+                                │
+                                ↓
+                  ┌─────────────────────────┐
+                  │ HTML + CSS + JavaScript │
+                  └─────────────────────────┘
+                                │
+              ┌─────────────────┼─────────────────┐
+              ↓                 ↓                 ↓
+        Alert Dataset      Risk Engine       SOC Context
+              │                 │                 │
+              └─────────────────┼─────────────────┘
+                                ↓
+                         Alert Triage
+                                ↓
+                         Investigation
+                                ↓
+                     MITRE ATT&CK Context
+                                ↓
+                         Incident Case
+                                ↓
+                         SOC Playbook
+                                ↓
+                       Analyst Decision
+                                ↓
+                         localStorage
 ~~~
 
-The score is an **analyst-support signal**, not a replacement for investigation.
+## 6.2 Component Responsibilities
+
+### Browser Application — \`app.js\`
+
+Responsible for the deployed runtime workflow:
+
+- Loading JSON datasets
+- Rendering dashboard metrics
+- Rendering alerts
+- Calculating browser-side risk
+- Opening alert investigation views
+- Linking alerts to incidents
+- Rendering playbooks
+- Rendering MITRE context
+- Managing analyst session state
+- Persisting local analyst changes
+
+### Risk Engine — \`ml_engine/risk_scoring_engine.py\`
+
+Reference implementation of the deterministic scoring logic.
+
+It calculates a score from observable alert attributes and returns:
+
+- Risk score
+- Risk level
+- Human-readable scoring reasons
+
+### Incident Generator — \`backend/incident_case_generator.py\`
+
+Reference implementation for converting significant alerts into structured incident cases.
+
+An alert becomes incident-eligible when:
+
+~~~text
+Risk score >= 65
+       OR
+Risk level = High/Critical
+       OR
+Severity = High/Critical
+~~~
+
+### JSON Data Layer
+
+The current runtime uses repository-managed JSON datasets for:
+
+- Alerts
+- Enriched alerts
+- Incidents
+- Playbooks
+- Project metadata
+
+This makes the current release deterministic, inspectable, and reproducible.
 
 ---
 
-# Architecture
+# 7. Explainable Risk Engine
 
-## Simple View
+The current browser product uses a **deterministic, rule-based scoring model** rather than claiming live autonomous ML inference.
+
+For an alert, the reference engine evaluates:
+
+### Base rule contribution
 
 ~~~text
-GitHub Repository
-       ↓
-GitHub Pages
-       ↓
-HTML + CSS + JavaScript
-       ↓
-Browser-side SOC workflow
-       ↓
+rule_level × 7
+~~~
+
+### Severity contribution
+
+| Severity | Points |
+|---|---:|
+| Critical | +20 |
+| High | +15 |
+| Medium | +8 |
+| Low | +3 |
+
+### Authentication correlation
+
+~~~text
+Successful login after failures → +15
+~~~
+
+### Failed-attempt volume
+
+| Failed attempts | Points |
+|---|---:|
+| 100+ | +15 |
+| 50–99 | +10 |
+| 10–49 | +5 |
+| <10 | +0 |
+
+### MITRE tactic contribution
+
+High-risk tactics:
+
+- Credential Access
+- Privilege Escalation
+- Persistence
+- Defense Evasion
+- Exfiltration
+- Command and Control
+
+**+10 points**
+
+Moderate-risk tactics:
+
+- Discovery
+- Reconnaissance
+- Initial Access
+- Execution
+
+**+5 points**
+
+### Source-IP repetition
+
+~~~text
+3+ occurrences → +10
+2 occurrences  → +5
+otherwise       → +0
+~~~
+
+### Event type contribution
+
+| Event type | Points |
+|---|---:|
+| privilege_escalation | +15 |
+| authentication_failure | +8 |
+| network_scan | +5 |
+
+### Final normalization
+
+~~~text
+Final Score = min(total_points, 100)
+~~~
+
+### Risk classification
+
+~~~text
+85–100 → Critical
+65–84  → High
+35–64  → Medium
+0–34   → Low
+~~~
+
+The engine also returns **risk reasons**, making the score auditable rather than a black-box number.
+
+---
+
+# 8. Incident Generation Model
+
+The reference incident generator separates **alert scoring** from **case creation**.
+
+### Eligibility
+
+~~~text
+Alert
+  │
+  ├── score >= 65 ─────────────┐
+  ├── risk = High/Critical ────┤
+  └── severity = High/Critical ┤
+                                ↓
+                         Create Incident
+~~~
+
+### Priority mapping
+
+~~~text
+Score >= 85 → P1 - Critical
+Score >= 65 → P2 - High
+Score >= 35 → P3 - Medium
+Otherwise   → P4 - Low
+~~~
+
+### Case structure
+
+The generated case contains operational context such as:
+
+- \`case_id\`
+- \`linked_alert_id\`
+- \`case_status\`
+- \`priority\`
+- \`severity\`
+- \`ai_risk_score\`
+- \`incident_type\`
+- \`affected_host\`
+- \`source_ip\`
+- \`username\`
+- \`mitre_id\`
+- \`mitre_tactic\`
+- \`mitre_technique\`
+- \`soc_decision\`
+- \`recommended_action\`
+- \`ai_explanation\`
+- \`assigned_to\`
+- \`analyst_notes\`
+- \`final_verdict\`
+
+---
+
+# 9. Data / Evidence Flow
+
+~~~text
+Repository JSON
+      ↓
+Alert Loader
+      ↓
+Alert Object
+      ↓
+Risk Evaluation
+      ↓
+Risk + Reasons
+      ↓
+Triage View
+      ↓
+Investigation Context
+      ↓
+Incident Correlation
+      ↓
+Playbook
+      ↓
+Analyst Notes / Verdict
+~~~
+
+The current system uses demonstration data rather than live telemetry.
+
+---
+
+# 10. Demonstration Dataset
+
+| Alert | Scenario | ATT&CK Context | Expected Risk |
+|---|---|---|---:|
+| ALERT-001 | SSH brute force | T1110 — Brute Force | 100 / Critical |
+| ALERT-002 | Network service scanning | T1046 — Network Service Discovery | 67 / High |
+| ALERT-003 | Suspicious privilege escalation | T1548 — Abuse Elevation Control Mechanism | 100 / Critical |
+
+These are **lab/demo cases**, not live production telemetry.
+
+---
+
+# 11. Browser State Model
+
+The deployed application maintains two categories of state:
+
+### Baseline state
+
+Loaded from repository data:
+
+- Alerts
+- Incidents
+- Playbooks
+- Project data
+
+### Local analyst state
+
+Stored in browser localStorage:
+
+- Notes
+- Status changes
+- Verdicts
+- Session-specific analyst actions
+
+Therefore:
+
+~~~text
+Repository data
+      ↓
+Baseline application state
+
+Browser actions
+      ↓
 localStorage
+      ↓
+Same browser profile
 ~~~
 
-## Detailed View
+There is currently **no shared persistent backend**.
+
+---
+
+# 12. Security Model and Boundaries
+
+The current release is intentionally designed as a static browser application.
+
+### Security controls include
+
+- Content Security Policy in \`index.html\`
+- \`object-src 'none'\`
+- \`frame-ancestors 'none'\`
+- Same-origin application assets
+- No API keys required
+- No external runtime dependency
+- No production credentials
+- Resilient localStorage parsing
+- HTTP response validation before JSON parsing
+
+### Important boundary
+
+The application is a **SOC learning/demo command center**, not a production security monitoring platform.
+
+It should not be interpreted as providing:
+
+- Production authentication
+- RBAC
+- Server-side authorization
+- Multi-user persistence
+- Live SIEM ingestion
+- Production containment
+- Autonomous SOAR execution
+
+---
+
+# 13. Validation and Quality Gates
+
+The repository contains automated integrity tests and a GitHub Actions deployment gate.
+
+Validation covers:
+
+### Data integrity
+
+- JSON files parse correctly
+- Required data contracts exist
+
+### Python integrity
+
+- Python source compiles successfully
+- Reference components can be imported
+
+### Risk regression
+
+The test suite verifies the expected demonstration outputs:
 
 ~~~text
-                    SentinelOps-AI
-                          │
-            ┌─────────────┼─────────────┐
-            ↓             ↓             ↓
-       Alert Data    Risk Engine    SOC Context
-            │             │             │
-            └─────────────┼─────────────┘
-                          ↓
-                    Alert Triage
-                          ↓
-                    Investigation
-                          ↓
-                 MITRE ATT&CK Context
-                          ↓
-                    Incident Case
-                          ↓
-                    SOC Playbook
-                          ↓
-                  Analyst Decision
-                          ↓
-                    Local Session
+Scores:
+[100, 67, 100]
+
+Levels:
+[Critical, High, Critical]
 ~~~
 
-The repository also contains Python reference implementations for the risk-scoring and incident-generation logic.
+### Incident contract
+
+Tests verify that each enriched demonstration alert:
+
+- Meets incident-generation criteria
+- Produces an incident
+- Links back to the source alert
+- Generates a valid incident ID
+
+### Browser runtime contract
+
+The project also checks required browser runtime/security constructs such as:
+
+- localStorage handling
+- JSON loader behavior
+- core workflow functions
+- CSP requirements
+- absence of external HTTP/HTTPS runtime dependencies in the application code
 
 ---
 
-# Technology
+# 14. CI/CD Flow
 
-- **Frontend:** HTML, CSS, JavaScript
-- **Runtime:** Browser
-- **Hosting:** GitHub Pages
-- **Automation:** GitHub Actions
-- **Data:** JSON demonstration datasets
-- **Session state:** Browser localStorage
-- **Reference layer:** Python
-- **Testing:** Python unittest
-- **Cost:** $0 for the current GitHub-only architecture
+Every push to \`main\` follows:
 
-The deployed product is intentionally browser-native. GitHub Pages provides static hosting, so the current release does not depend on a server-side Python application.
+~~~text
+Git Push
+   ↓
+GitHub Actions
+   ↓
+JSON Validation
+   ↓
+Python Syntax Validation
+   ↓
+Automated Tests
+   ↓
+Static Runtime Checks
+   ↓
+Validation Passed
+   ↓
+GitHub Pages Artifact
+   ↓
+GitHub Pages Deployment
+~~~
+
+This keeps validation ahead of deployment.
 
 ---
 
-# Repository Structure
+# 15. Technology Stack
+
+| Layer | Technology |
+|---|---|
+| UI | HTML5 |
+| Styling | CSS3 |
+| Application logic | Vanilla JavaScript |
+| Runtime | Browser |
+| Data format | JSON |
+| Reference logic | Python |
+| Testing | Python unittest |
+| Source control | GitHub |
+| CI/CD | GitHub Actions |
+| Hosting | GitHub Pages |
+| Browser persistence | localStorage |
+| Cost model | $0 |
+
+The deployed runtime intentionally does not depend on a server-side Python application.
+
+---
+
+# 16. Repository Structure
 
 ~~~text
 SentinelOps_AI/
-├── index.html
-├── styles.css
-├── app.js
+│
+├── index.html                         # GitHub Pages entry point
+├── styles.css                         # SOC interface
+├── app.js                             # Browser application
 │
 ├── backend/
-│   └── incident_case_generator.py
+│   └── incident_case_generator.py    # Incident reference logic
 │
 ├── ml_engine/
-│   └── risk_scoring_engine.py
+│   └── risk_scoring_engine.py         # Risk reference logic
 │
 ├── sample_data/
-│   ├── alerts_sample.json
-│   └── alerts_enriched_with_risk.json
+│   ├── alerts_sample.json             # Source alerts
+│   └── alerts_enriched_with_risk.json # Enriched alert examples
 │
 ├── database/
-│   └── incidents_db.json
+│   └── incidents_db.json              # Demo incident cases
 │
 ├── incident_playbooks/
-│   └── default_soc_playbooks.json
+│   └── default_soc_playbooks.json     # SOC L1 playbooks
 │
-├── reports/
-├── learning_notes/
-├── tests/
-├── docs/
-├── .github/workflows/
-│   └── pages.yml
+├── reports/                           # Example incident reports
+├── learning_notes/                    # Phase documentation
+├── tests/                             # Automated validation
+├── docs/                              # Architecture/release docs
 │
-└── project_manifest.json
+├── .github/
+│   └── workflows/
+│       └── pages.yml                  # Validate + deploy
+│
+├── project_manifest.json              # Project metadata
+├── README.md
+└── LICENSE
 ~~~
 
 ---
 
-# Demo Dataset
+# 17. Recommended Technical Demo
 
-The current demonstration environment contains three primary alert scenarios:
-
-| Alert | Scenario | Example ATT&CK context |
-|---|---|---|
-| ALERT-001 | SSH brute force | T1110 — Brute Force |
-| ALERT-002 | Network service scanning | T1046 — Network Service Scanning |
-| ALERT-003 | Suspicious privilege escalation | T1548 — Abuse Elevation Control Mechanism |
-
-These are **demonstration/lab cases**, not live production telemetry.
-
----
-
-# Recommended Demo
-
-For a short recruiter or technical demonstration:
+For a recruiter, SOC analyst, trainer, or technical evaluator:
 
 ~~~text
 Overview
@@ -362,9 +714,11 @@ Alert Triage
    ↓
 Open ALERT-001
    ↓
-Review Risk Factors
+Inspect Evidence
    ↓
-Review MITRE Context
+Inspect Risk Reasons
+   ↓
+Review MITRE Mapping
    ↓
 Open Linked Incident
    ↓
@@ -377,73 +731,90 @@ Add Analyst Note
 Set Status / Verdict
 ~~~
 
-Then demonstrate the network-scan and privilege-escalation cases to show different investigation paths.
+Then repeat with:
+
+- ALERT-002 — network scanning
+- ALERT-003 — privilege escalation
+
+This demonstrates multiple SOC investigation paths rather than only the dashboard.
 
 ---
 
-# Validation & Release
+# 18. What Is Implemented
 
-Every push to **main** runs the GitHub Actions validation workflow before deployment.
-
-The validation gate checks:
-
-- JSON contracts
-- Python syntax
-- Risk-score regression
-- Incident-generation contracts
-- Required runtime files
-- Browser runtime requirements
-
-The current main revision has passed the validation and deployment workflow.
-
----
-
-# Security Boundary
-
-Do **not** commit:
-
-- API keys
-- Passwords
-- Access tokens
-- Private keys
-- Certificates
-- Production credentials
-
-The current repository contains demonstration/lab data.
-
----
-
-# Current Scope
-
-### Implemented
+### Application
 
 - SOC dashboard
 - Alert triage
-- Explainable risk scoring
 - Alert investigation
+- Deterministic explainable risk scoring
+- Risk classification
+- Incident case views
 - MITRE ATT&CK context
-- Incident cases
 - SOC L1 playbooks
-- Analyst notes/status/verdict
+- Analyst notes
+- Status/verdict workflow
 - Browser persistence
-- Automated validation
+- Responsive interface
+
+### Engineering
+
+- JSON data contracts
+- Python reference implementations
+- Risk regression tests
+- Incident-generation tests
+- Browser runtime contract tests
+- Security/runtime hardening
+- GitHub Actions validation
 - GitHub Pages deployment
-
-### Intentionally outside the current release
-
-- Live SIEM ingestion
-- Live Wazuh connectivity
-- Persistent server-side database
-- Production authentication/RBAC
-- Production SOAR execution
-- External threat-intelligence API dependency
-- Autonomous production ML inference
-
-These require additional infrastructure and are outside the current **$0 GitHub-only** release.
 
 ---
 
-# Run Locally
+# 19. Current Scope Boundary
+
+## Implemented in this release
+
+- Static SOC command center
+- Demonstration alert dataset
+- Explainable risk engine
+- Incident workflow
+- MITRE context
+- Playbook workflow
+- Analyst session state
+- Automated validation
+- GitHub Pages deployment
+
+## Intentionally not implemented
+
+- Live SIEM ingestion
+- Live Wazuh connectivity
+- Persistent server-side incident database
+- Production authentication/RBAC
+- Multi-user collaboration
+- Production SOAR execution
+- External threat-intelligence API dependency
+- Autonomous production ML inference
+- Production containment actions
+
+These require additional infrastructure and are outside the current **$0 GitHub-only release**.
+
+---
+
+# 20. AI / ML Positioning
+
+The project is named **SentinelOps-AI**, but the current GitHub Pages runtime should be understood precisely:
+
+**The deployed browser risk engine is deterministic and explainable.**
+
+It does not claim that the current release performs autonomous production-grade ML inference.
+
+The repository's Python risk-scoring layer provides the reference implementation and regression-tested logic.
+
+This distinction is intentional: the project prioritizes **reproducibility, explainability, inspectability, and zero-cost deployment** for the current release.
+
+---
+
+# 21. Local Development
 
 From the repository root:
 
@@ -457,7 +828,7 @@ Open:
 http://localhost:8000/
 ~~~
 
-For Python reference-layer tests:
+Run the Python reference-layer tests:
 
 ~~~bash
 python -m unittest discover -s tests -p "test_*.py" -v
@@ -465,13 +836,32 @@ python -m unittest discover -s tests -p "test_*.py" -v
 
 ---
 
-# Project Status
+# 22. Security Rules for Contributors
+
+Never commit:
+
+- API keys
+- Passwords
+- Access tokens
+- Private keys
+- Certificates
+- Production credentials
+- Real sensitive telemetry
+- Personally identifiable security data
+
+The current repository is designed around demonstration/lab data.
+
+---
+
+# 23. Project Status
 
 **Current GitHub-only product baseline: complete for the defined release scope.**
 
-The project demonstrates a complete SOC L1 workflow from:
+The current release demonstrates:
 
-**Alert → Risk → Investigation → Incident → Playbook → Analyst Decision**
+**Alert → Risk → Triage → Investigation → MITRE Context → Incident → Playbook → Analyst Decision**
+
+The architecture is intentionally small enough to run at $0 while keeping the SOC workflow explicit and inspectable.
 
 ---
 
@@ -481,8 +871,8 @@ See [LICENSE](LICENSE).
 
 ---
 
-## Repository
+## Links
 
-**GitHub:** [Sarma9273/sentinelops-ai-command-center](https://github.com/Sarma9273/sentinelops-ai-command-center)
+**GitHub Repository:** [Sarma9273/sentinelops-ai-command-center](https://github.com/Sarma9273/sentinelops-ai-command-center)
 
 **Live Demo:** [Open SentinelOps-AI Command Center](https://sarma9273.github.io/sentinelops-ai-command-center/)
