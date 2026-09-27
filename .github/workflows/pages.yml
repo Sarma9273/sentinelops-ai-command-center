@@ -1,4 +1,4 @@
-name: Deploy SentinelOps-AI to GitHub Pages
+name: Validate and Deploy SentinelOps-AI
 
 on:
   push:
@@ -15,7 +15,40 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Validate JSON and Python
+        run: |
+          python - <<'PY'
+          import json, pathlib, py_compile
+          root = pathlib.Path(".")
+          for p in root.rglob("*.json"):
+              if ".git" not in p.parts:
+                  json.loads(p.read_text(encoding="utf-8"))
+          for p in root.rglob("*.py"):
+              if ".git" not in p.parts:
+                  py_compile.compile(str(p), doraise=True)
+          print("JSON and Python syntax validation passed")
+          PY
+      - name: Run project tests
+        run: python -m unittest discover -s tests -p "test_*.py" -v
+      - name: Validate static runtime
+        run: |
+          test -f index.html
+          test -f styles.css
+          test -f app.js
+          test -f sample_data/alerts_sample.json
+          test -f database/incidents_db.json
+          test -f incident_playbooks/default_soc_playbooks.json
+          grep -q "SentinelOps-AI" index.html
+          grep -q "localStorage" app.js
+          echo "Static runtime validation passed"
+
   deploy:
+    needs: validate
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
