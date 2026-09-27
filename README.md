@@ -409,7 +409,7 @@ project_manifest.json              # Machine-readable project status
 
 # Release Status
 
-**Code-level release baseline: complete.**
+**Code-level product baseline: complete for the current GitHub-only scope.**
 
 Remaining release actions are human-controlled:
 
