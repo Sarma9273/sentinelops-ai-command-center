@@ -1,30 +1,43 @@
 # Project Structure
 
-## Core application
+## Runtime
 
-- `backend/` — incident-case generation logic
-- `ml_engine/` — risk scoring engine
-- `index.html` — current GitHub Pages entry point
+- `index.html` — GitHub Pages entry point
+- `styles.css` — application UI
+- `app.js` — browser-native application logic, scoring, navigation and local analyst state
 
-## SOC data and artifacts
+## Research/reference logic
 
-- `sample_data/` — sample and enriched alerts
-- `database/` — demo incident database
-- `incident_playbooks/` — SOC L1 playbooks
+- `backend/incident_case_generator.py` — incident-case generation reference implementation
+- `ml_engine/risk_scoring_engine.py` — deterministic risk-scoring reference implementation
+- `learning_notes/` — Phase 1 development and learning notes
+
+## SOC data
+
+- `sample_data/alerts_sample.json` — raw demo alerts
+- `sample_data/alerts_enriched_with_risk.json` — enriched Phase 1 alert artifacts
+- `database/incidents_db.json` — baseline demo incident cases
+- `incident_playbooks/default_soc_playbooks.json` — SOC L1 playbooks
 - `reports/` — example incident reports
 
 ## Documentation
 
-- `docs/project_overview.md` — project purpose and scope
-- `docs/PHASE_STATUS.md` — completed Phase 1 status
-- `docs/PROJECT_STRUCTURE.md` — repository organization
+- `README.md` — product and release overview
+- `docs/project_overview.md` — scope and architecture
+- `docs/PHASE_STATUS.md` — release status
+- `docs/PROJECT_STRUCTURE.md` — repository map
 - `docs/assets/` — repository visual assets
-- `learning_notes/` — phase development notes
+- `project_manifest.json` — machine-readable project manifest
 
-## Development
+## Validation and deployment
 
-- `tests/` — validation tests
-- `.github/workflows/` — GitHub Pages deployment
-- `requirements.txt` — Python dependencies
+- `tests/` — regression and integrity tests
+- `.github/workflows/pages.yml` — validation gate and GitHub Pages deployment
+- `.env.example` — non-secret template for future research/integration work; it is not used by the browser runtime
+- `requirements.txt` — Python research/test dependencies
 
-Empty future placeholder directories were intentionally removed. New Wazuh, SOAR, notebook, screenshot and other integration directories should be created only when their implementation is actually started.
+## Architectural boundary
+
+The deployed product does not require a Python server, external database, paid API, or external hosting service.
+
+Empty future placeholder directories are intentionally avoided. A new integration directory should be created only when that integration has an actual implementation.
