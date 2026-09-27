@@ -1,4 +1,6 @@
-const state={alerts:[],incidents:[],playbooks:{},local:JSON.parse(localStorage.getItem("sentinelops-session")||"{}")};
+let persisted={};
+try{persisted=JSON.parse(localStorage.getItem("sentinelops-session")||"{}");if(!persisted||typeof persisted!=="object")persisted={}}catch{persisted={};localStorage.removeItem("sentinelops-session")}
+const state={alerts:[],incidents:[],playbooks:{},local:persisted};
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const save=()=>localStorage.setItem("sentinelops-session",JSON.stringify(state.local));
 const toast=m=>{const t=$("#toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1800)};
