@@ -1,9 +1,16 @@
 name: Validate and Deploy SentinelOps-AI
 
+# This workflow is intentionally self-contained and runs on every push to main.
 on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      deploy:
+        description: 'Run the Pages deployment after validation'
+        required: false
+        default: true
+        type: boolean
 
 permissions:
   contents: read
