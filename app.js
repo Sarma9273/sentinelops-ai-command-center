@@ -18,7 +18,7 @@ function scoreAlert(alert,all){
 }
 function enrich(){state.alerts=state.rawAlerts.map(a=>scoreAlert(a,state.rawAlerts));}
 function caseForAlert(a){
- const existing=state.incidents.find(i=>i.linked_alert_id===a.alert_id);if(existing)return existing;
+ const existing=allCases().find(i=>i.linked_alert_id===a.alert_id);if(existing)return existing;
  return {case_id:"INC-"+a.alert_id.replace("ALERT-",""),linked_alert_id:a.alert_id,created_at:new Date().toISOString(),updated_at:new Date().toISOString(),case_title:a.rule_name,case_status:"Open",priority:a.ai_risk_score>=85?"P1 - Critical":a.ai_risk_score>=65?"P2 - High":"P3 - Medium",severity:a.ai_risk_level,ai_risk_score:a.ai_risk_score,incident_type:a.event_type,affected_host:a.target_host||"-",source_ip:a.source_ip||"-",username:a.username||"-",mitre_id:a.mitre_id||"-",mitre_tactic:a.mitre_tactic||"-",mitre_technique:a.mitre_technique||"-",soc_decision:a.soc_decision||"Investigate",recommended_action:a.recommended_action||"-",ai_explanation:a.ai_explanation||"-",assigned_to:"SOC L1 Analyst",analyst_notes:"",final_verdict:"Pending"}}
 function allCases(){const base=state.baseIncidents.map(i=>({...i}));for(const k of Object.values(state.local.incidents||{})){const idx=base.findIndex(i=>i.case_id===k.case_id);if(idx>=0)base[idx]={...base[idx],...k};else base.push(k)}return base}
 function badge(v){const c=String(v).toLowerCase().replace(/\s+/g,"-");return `<span class="badge ${c}">${esc(v)}</span>`}
