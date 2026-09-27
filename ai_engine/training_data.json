@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "description": "Synthetic, non-production training examples for the local SentinelOps-AI logistic risk model.",
+  "feature_order": [
+    "rule_norm",
+    "severity_norm",
+    "auth_success",
+    "failed_attempts_norm",
+    "tactic_risk",
+    "source_repetition_norm",
+    "event_risk",
+    "anomaly_signal"
+  ],
+  "rows": []
+}
