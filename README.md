@@ -70,4 +70,4 @@ The browser product intentionally uses deterministic, explainable scoring rules.
 
 ## Release boundary
 
-The repository remains private during development. Public release is a separate final gate and must happen only after functional QA, security/secrets audit, documentation review, and deployment verification are complete.
+The current implementation is release-ready at the code level. Before public distribution, perform the remaining human-controlled release steps: browser functional verification, GitHub Pages accessibility verification, and repository visibility review. Repository visibility cannot be changed by the application itself.
