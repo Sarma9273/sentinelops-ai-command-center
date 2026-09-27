@@ -54,3 +54,20 @@ This is a self-contained SOC learning/demo product, not a live SIEM. GitHub Page
 ## Security
 
 Do not commit API keys, passwords, access tokens, certificates or production credentials.
+
+
+## Validation gate
+
+Every push to `main` runs a zero-dependency validation gate before deployment:
+
+- JSON data-contract parsing
+- Python syntax compilation
+- deterministic risk-score regression checks
+- incident-generation contract checks
+- required static-runtime file checks
+
+The browser product intentionally uses deterministic, explainable scoring rules. The earlier Colab/ML work remains the research and experimentation layer; the GitHub-only runtime does not claim to perform live autonomous ML inference.
+
+## Release boundary
+
+The repository remains private during development. Public release is a separate final gate and must happen only after functional QA, security/secrets audit, documentation review, and deployment verification are complete.
