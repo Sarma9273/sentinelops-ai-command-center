@@ -16,7 +16,7 @@ class BrowserAppContractTests(unittest.TestCase):
         self.assertIn("!r.ok", self.app)
 
     def test_core_workflow_contract(self):
-        for token in ["scoreAlert", "caseForAlert", "renderPlaybooks", "renderMitre", "openAlert", "openIncident", "localStorage"]:
+        for token in ["scoreAlert", "scoreAI", "mlFeatures", "hybrid_risk", "model_version", "caseForAlert", "renderPlaybooks", "renderMitre", "openAlert", "openIncident", "localStorage"]:
             self.assertIn(token, self.app)
 
     def test_security_contract(self):
@@ -26,6 +26,7 @@ class BrowserAppContractTests(unittest.TestCase):
         self.assertIn("frame-ancestors 'none'", csp.group(0))
         self.assertNotIn("http://", self.app)
         self.assertNotIn("https://", self.app)
+        self.assertIn('./ai_engine/model.json', self.app)
 
 if __name__ == "__main__":
     unittest.main()
