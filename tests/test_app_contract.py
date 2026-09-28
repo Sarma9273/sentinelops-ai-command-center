@@ -28,5 +28,9 @@ class BrowserAppContractTests(unittest.TestCase):
         self.assertNotIn("https://", self.app)
         self.assertIn('./ai_engine/model.json', self.app)
 
+    def test_dynamic_html_attributes_are_escaped(self):
+        for token in ['data-alert="${a.alert_id}"', 'data-incident="${i.case_id}"', 'data-create-case="${a.alert_id}"', '${x.alerts.join(", ")}']:
+            self.assertNotIn(token, self.app)
+
 if __name__ == "__main__":
     unittest.main()
