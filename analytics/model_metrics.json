@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "evaluation_status": "ready",
+  "metrics": [
+    "precision",
+    "recall",
+    "f1",
+    "accuracy",
+    "false_positive_rate",
+    "inference_latency",
+    "explanation_coverage"
+  ],
+  "note": "Populate empirical metrics only from executed experiments; do not treat synthetic demonstration results as production performance."
+}
