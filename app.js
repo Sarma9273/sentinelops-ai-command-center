@@ -1,6 +1,6 @@
 let persisted={};
 try{persisted=JSON.parse(localStorage.getItem("sentinelops-session")||"{}");if(!persisted||typeof persisted!=="object")persisted={}}catch{persisted={};localStorage.removeItem("sentinelops-session")}
-const state={alerts:[],incidents:[],playbooks:{},local:persisted};
+const state={alerts:[],incidents:[],playbooks:{},model:null,local:persisted};
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const save=()=>localStorage.setItem("sentinelops-session",JSON.stringify(state.local));
 const toast=m=>{const t=$("#toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1800)};
@@ -16,7 +16,9 @@ function scoreAlert(alert,all){
   score=Math.min(score,100);const level=score>=85?"Critical":score>=65?"High":score>=35?"Medium":"Low";
   return {...alert,ai_risk_score:score,ai_risk_level:level,risk_reasons:reasons};
 }
-function enrich(){state.alerts=state.rawAlerts.map(a=>scoreAlert(a,state.rawAlerts));}
+function mlFeatures(alert,all){const sev={critical:1,high:.8,medium:.55,low:.25}[String(alert.severity||"low").toLowerCase()]??.25;const failed=Math.min(1,Number(alert.failed_attempts||0)/100);const ip=alert.source_ip||"";const repetition=Math.min(1,all.filter(a=>(a.source_ip||"")===ip).length/3);const tactic=String(alert.mitre_tactic||"").toLowerCase();const tacticRisk=["credential access","privilege escalation","persistence","defense evasion","exfiltration","command and control"].includes(tactic)?1:["discovery","reconnaissance","initial access","execution"].includes(tactic)?.55:.2;const eventRisk={privilege_escalation:1,authentication_failure:.65,network_scan:.55}[String(alert.event_type||"").toLowerCase()]??.2;return [Math.min(1,Number(alert.rule_level||0)/12),sev,alert.successful_login_after_failures===true?1:0,failed,tacticRisk,repetition,eventRisk,Number(alert.anomaly_signal??0)];}
+function scoreAI(alert,all){if(!state.model)return {ml_probability:null,ai_model_risk:null,ai_confidence:null};const x=mlFeatures(alert,all),m=state.model,z=m.intercept+m.coefficients.reduce((sum,c,i)=>sum+c*x[i],0),p=1/(1+Math.exp(-Math.max(-30,Math.min(30,z))));return {ml_probability:Number(p.toFixed(4)),ai_model_risk:Math.round(p*100),ai_confidence:Number((Math.abs(p-.5)*2).toFixed(4)),model_version:m.model_version,model_name:m.model_name};}
+function enrich(){state.alerts=state.rawAlerts.map(a=>{const d=scoreAlert(a,state.rawAlerts),m=scoreAI(a,state.rawAlerts);const final=m.ai_model_risk===null?d.ai_risk_score:Math.round(.55*d.ai_risk_score+.45*m.ai_model_risk);return {...d,...m,deterministic_risk:d.ai_risk_score,hybrid_risk:final,ai_risk_score:final,ai_risk_level:final>=85?"Critical":final>=65?"High":final>=35?"Medium":"Low"};});}
 function caseForAlert(a){
  const existing=allCases().find(i=>i.linked_alert_id===a.alert_id);if(existing)return existing;
  return {case_id:"INC-"+a.alert_id.replace("ALERT-",""),linked_alert_id:a.alert_id,created_at:new Date().toISOString(),updated_at:new Date().toISOString(),case_title:a.rule_name,case_status:"Open",priority:a.ai_risk_score>=85?"P1 - Critical":a.ai_risk_score>=65?"P2 - High":"P3 - Medium",severity:a.ai_risk_level,ai_risk_score:a.ai_risk_score,incident_type:a.event_type,affected_host:a.target_host||"-",source_ip:a.source_ip||"-",username:a.username||"-",mitre_id:a.mitre_id||"-",mitre_tactic:a.mitre_tactic||"-",mitre_technique:a.mitre_technique||"-",soc_decision:a.soc_decision||"Investigate",recommended_action:a.recommended_action||"-",ai_explanation:a.ai_explanation||"-",assigned_to:"SOC L1 Analyst",analyst_notes:"",final_verdict:"Pending"}}
@@ -25,7 +27,7 @@ function badge(v){const c=String(v).toLowerCase().replace(/\s+/g,"-");return `<s
 function show(view){$$(".view").forEach(x=>x.classList.remove("active"));$("#"+view).classList.add("active");$$(".nav").forEach(x=>x.classList.toggle("active",x.dataset.view===view));scrollTo(0,0)}
 function metrics(){
  const a=state.alerts,c=allCases(),avg=a.length?(a.reduce((s,x)=>s+x.ai_risk_score,0)/a.length).toFixed(1):"0";
- $("#metrics").innerHTML=[["Total alerts",a.length,"repository sample"],["Critical",a.filter(x=>x.ai_risk_level==="Critical").length,"risk ≥ 85"],["High",a.filter(x=>x.ai_risk_level==="High").length,"risk 65–84"],["Average risk",avg,"0–100 score"],["Open cases",c.filter(x=>x.case_status!=="Closed").length,"browser + baseline"],["Escalations",c.filter(x=>x.priority==="P1 - Critical").length,"P1 cases"],["MITRE techniques",new Set(a.map(x=>x.mitre_id).filter(Boolean)).size,"sample coverage"],["Session changes",Object.keys(state.local.incidents||{}).length,"stored locally"]].map(x=>`<div class="metric"><div class="metric-label">${x[0]}</div><div class="metric-value">${x[1]}</div><div class="metric-sub">${x[2]}</div></div>`).join("");
+ $("#metrics").innerHTML=[["Total alerts",a.length,"repository sample"],["Critical",a.filter(x=>x.ai_risk_level==="Critical").length,"risk ≥ 85"],["High",a.filter(x=>x.ai_risk_level==="High").length,"risk 65–84"],["Average risk",avg,"0–100 score"],["Open cases",c.filter(x=>x.case_status!=="Closed").length,"browser + baseline"],["Escalations",c.filter(x=>x.priority==="P1 - Critical").length,"P1 cases"],["MITRE techniques",new Set(a.map(x=>x.mitre_id).filter(Boolean)).size,"sample coverage"],["AI model",state.model?.model_version||"v1.0","local logistic model"],["Session changes",Object.keys(state.local.incidents||{}).length,"stored locally"]].map(x=>`<div class="metric"><div class="metric-label">${x[0]}</div><div class="metric-value">${x[1]}</div><div class="metric-sub">${x[2]}</div></div>`).join("");
 }
 function overview(){
  const counts={Critical:0,High:0,Medium:0,Low:0};state.alerts.forEach(a=>counts[a.ai_risk_level]++);
@@ -57,8 +59,8 @@ function openIncident(id){
 }
 async function getJSON(path){const r=await fetch(path,{cache:"no-store"});if(!r.ok)throw new Error(`Failed to load ${path} (HTTP ${r.status})`);return r.json()}
 async function boot(){
- const [raw,inc,pb]=await Promise.all([getJSON("./sample_data/alerts_sample.json"),getJSON("./database/incidents_db.json"),getJSON("./incident_playbooks/default_soc_playbooks.json")]);
- state.rawAlerts=raw;state.baseIncidents=inc;state.playbooks=pb;enrich();renderAll();
+ const [raw,inc,pb,model]=await Promise.all([getJSON("./sample_data/alerts_sample.json"),getJSON("./database/incidents_db.json"),getJSON("./incident_playbooks/default_soc_playbooks.json"),getJSON("./ai_engine/model.json")]);
+ state.rawAlerts=raw;state.baseIncidents=inc;state.playbooks=pb;state.model=model;enrich();renderAll();
 }
 function renderPlaybooks(){$("#playbookGrid").innerHTML=Object.entries(state.playbooks).map(([k,p])=>`<article class="playbook"><p class="eyebrow">${esc(p.playbook_id)}</p><h3>${esc(p.name)}</h3><ol>${(p.l1_steps||[]).map(s=>`<li>${esc(s)}</li>`).join("")}</ol><p class="sub"><b>Containment:</b> ${esc(p.containment_recommendation||"-")}</p><p class="sub"><b>Escalation:</b> ${esc(p.escalation_condition||"-")}</p></article>`).join("")}
 function renderMitre(){const map={};state.alerts.forEach(a=>{if(!a.mitre_id)return;(map[a.mitre_id]??={id:a.mitre_id,technique:a.mitre_technique,tactic:a.mitre_tactic,count:0,alerts:[]});map[a.mitre_id].count++;map[a.mitre_id].alerts.push(a.alert_id)});$("#mitreGrid").innerHTML=Object.values(map).map(x=>`<article class="mitre-card"><div class="mitre-id">${esc(x.id)}</div><h3>${esc(x.technique)}</h3><p class="muted">Tactic: ${esc(x.tactic)}</p><p>Observed in <b>${x.count}</b> sample alert(s): ${x.alerts.join(", ")}</p></article>`).join("")}
