@@ -1,6 +1,6 @@
 {
   "model_name": "sentinelops-local-logistic-risk",
-  "model_version": "1.1.0",
+  "model_version": "2.0.0",
   "algorithm": "logistic_regression",
   "training_data": "ai_engine/training_data.json",
   "feature_order": [
@@ -24,5 +24,5 @@
     0.56739876,
     0.56533086
   ],
-  "training_note": "Weights are committed as a reproducible local demonstration model and are not production security detection. Re-run train_model.py to retrain from the committed synthetic dataset."
+  "training_note": "Weights are a reproducible local demonstration model trained from the committed synthetic dataset; they are not production security detection. Re-run train_model.py to retrain from the committed dataset."
 }
