@@ -1,8 +1,8 @@
 let persisted={};
-try{persisted=JSON.parse(localStorage.getItem("sentinelops-session")||"{}");if(!persisted||typeof persisted!=="object")persisted={}}catch{persisted={};localStorage.removeItem("sentinelops-session")}
+try{persisted=JSON.parse(localStorage.getItem("sentinelops-session")||"{}");if(!persisted||typeof persisted!=="object")persisted={}}catch{persisted={}}
 const state={alerts:[],incidents:[],playbooks:{},model:null,local:persisted};
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-const save=()=>localStorage.setItem("sentinelops-session",JSON.stringify(state.local));
+const save=()=>{try{localStorage.setItem("sentinelops-session",JSON.stringify(state.local));return true}catch{return false}};
 const toast=m=>{const t=$("#toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1800)};
 const esc=s=>String(s??"-").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function scoreAlert(alert,all){
