@@ -1,13 +1,20 @@
 """Evaluate the committed local logistic model on a deterministic holdout split."""
-import json, math
+import json, math, random
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
 data=json.loads((ROOT/"ai_engine/training_data.json").read_text())
 model=json.loads((ROOT/"ai_engine/model.json").read_text())
 rows=data["rows"]
-cut=int(len(rows)*0.8)
-train, test=rows[:cut], rows[cut:]
+rng=random.Random(42)
+shuffled=rows[:]
+rng.shuffle(shuffled)
+# Stratified 80/20 split preserves both labels in train and test.
+train=[];test=[]
+for label in sorted(set(r["label"] for r in shuffled)):
+    group=[r for r in shuffled if r["label"]==label]
+    cut=max(1,int(len(group)*0.8))
+    train.extend(group[:cut]);test.extend(group[cut:])
 
 def sigmoid(z):
     return 1/(1+math.exp(-max(-30,min(30,z))))
