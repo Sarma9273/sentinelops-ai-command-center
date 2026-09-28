@@ -1,0 +1,32 @@
+{
+  "states": [
+    "NEW",
+    "TRIAGED",
+    "INVESTIGATING",
+    "ESCALATED",
+    "RESOLVED",
+    "FALSE_POSITIVE"
+  ],
+  "transitions": {
+    "NEW": [
+      "TRIAGED",
+      "FALSE_POSITIVE"
+    ],
+    "TRIAGED": [
+      "INVESTIGATING",
+      "ESCALATED",
+      "FALSE_POSITIVE"
+    ],
+    "INVESTIGATING": [
+      "ESCALATED",
+      "RESOLVED",
+      "FALSE_POSITIVE"
+    ],
+    "ESCALATED": [
+      "INVESTIGATING",
+      "RESOLVED"
+    ],
+    "RESOLVED": [],
+    "FALSE_POSITIVE": []
+  }
+}
