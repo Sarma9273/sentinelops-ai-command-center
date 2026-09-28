@@ -27,7 +27,7 @@
         <button class="nav" data-view="alerts">Alert Triage</button>
         <button class="nav" data-view="incidents">Incidents</button>
         <button class="nav" data-view="playbooks">Playbooks</button>
-        <button class="nav" data-view="mitre">MITRE ATT&CK</button>
+        <button class="nav" data-view="correlation">Correlation</button><button class="nav" data-view="analytics">SOC Analytics</button><button class="nav" data-view="evaluation">AI Evaluation</button><button class="nav" data-view="mitre">MITRE ATT&CK</button>
         <div class="side-note">
           <b>Static architecture</b>
           <p>Data and logic execute in the browser. Analyst notes, verdicts and case status are stored locally in this browser.</p>
@@ -77,7 +77,7 @@
           <div id="playbookGrid" class="playbook-grid"></div>
         </section>
 
-        <section id="mitre" class="view">
+        <section id="correlation" class="view"><div class="page-head"><div><p class="eyebrow">ALERT CORRELATION</p><h1>Activity Groups</h1><p class="muted">Operational correlation groups alerts using shared SOC attributes; this is not deep investigation reasoning.</p></div></div><div id="correlationGrid" class="playbook-grid"></div></section><section id="analytics" class="view"><div class="page-head"><div><p class="eyebrow">SOC ANALYTICS</p><h1>Operations Metrics</h1><p class="muted">Metrics are calculated from the repository sample and browser-local analyst state.</p></div></div><div id="analyticsGrid" class="metric-grid"></div></section><section id="evaluation" class="view"><div class="page-head"><div><p class="eyebrow">MODEL EVALUATION</p><h1>AI Evaluation Center</h1><p class="muted">Committed evaluation definitions are shown without fabricating empirical results.</p></div></div><div id="evaluationGrid" class="metric-grid"></div></section><section id="mitre" class="view">
           <div class="page-head"><div><p class="eyebrow">THREAT CONTEXT</p><h1>MITRE ATT&CK Coverage</h1><p class="muted">Techniques represented by the current sample alert set.</p></div></div>
           <div id="mitreGrid" class="mitre-grid"></div>
         </section>
