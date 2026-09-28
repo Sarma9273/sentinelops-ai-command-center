@@ -46,6 +46,13 @@ jobs:
         run: python -m unittest discover -s tests -p "test_*.py" -v
       - name: Evaluate committed model
         run: python ai_engine/evaluation.py
+      - name: Static security audit
+        run: |
+          ! grep -nE '(^|[^A-Za-z0-9_])(eval|document\.write|new Function)\s*\(' app.js
+          ! grep -nE 'https?://' app.js ai_engine/inference.js
+          grep -q "Content-Security-Policy" index.html
+          grep -q "object-src 'none'" index.html
+          echo "Static security audit passed"
       - name: Validate static runtime
         run: |
           test -f index.html
@@ -77,3 +84,9 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Smoke test deployed site
+        env:
+          PAGE_URL: \${{ steps.deployment.outputs.page_url }}
+        run: |
+          curl --fail --silent --show-error --location --max-time 30 "$PAGE_URL" | grep -q "SentinelOps-AI"
+          echo "GitHub Pages deployment smoke test passed: $PAGE_URL"
