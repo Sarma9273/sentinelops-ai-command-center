@@ -44,6 +44,8 @@ jobs:
           PY
       - name: Run project tests
         run: python -m unittest discover -s tests -p "test_*.py" -v
+      - name: Evaluate committed model
+        run: python ai_engine/evaluation.py
       - name: Validate static runtime
         run: |
           test -f index.html
