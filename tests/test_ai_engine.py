@@ -14,7 +14,7 @@ class TestAIEngine(unittest.TestCase):
 
     def test_model_contract(self):
         model=json.loads((ROOT/"ai_engine/model.json").read_text())
-        self.assertEqual(model["model_version"],"1.1.0")
+        self.assertEqual(model["model_version"],"2.0.0")
         self.assertEqual(model["algorithm"],"logistic_regression")
         self.assertEqual(len(model["feature_order"]),8)
         self.assertEqual(len(model["coefficients"]),8)
