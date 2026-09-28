@@ -3,8 +3,26 @@
   "model_version": "1.1.0",
   "algorithm": "logistic_regression",
   "training_data": "ai_engine/training_data.json",
-  "feature_order": ["rule_norm","severity_norm","auth_success","failed_attempts_norm","tactic_risk","source_repetition_norm","event_risk","anomaly_signal"],
-  "intercept": -2.0,
-  "coefficients": [0.6,0.6,0.4,0.6,0.6,0.6,0.6,0.5],
+  "feature_order": [
+    "rule_norm",
+    "severity_norm",
+    "auth_success",
+    "failed_attempts_norm",
+    "tactic_risk",
+    "source_repetition_norm",
+    "event_risk",
+    "anomaly_signal"
+  ],
+  "intercept": -2.07915063,
+  "coefficients": [
+    0.57732687,
+    0.56831133,
+    0.64634505,
+    0.57663637,
+    0.56533086,
+    0.57393175,
+    0.56739876,
+    0.56533086
+  ],
   "training_note": "Weights are committed as a reproducible local demonstration model and are not production security detection. Re-run train_model.py to retrain from the committed synthetic dataset."
 }
