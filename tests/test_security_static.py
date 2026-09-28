@@ -32,8 +32,8 @@ class StaticSecurityAuditTests(unittest.TestCase):
 
     def test_local_state_is_browser_only(self):
         self.assertIn("localStorage", self.app)
-        self.assertIn('fetch("./sample_data/alerts_sample.json"', self.app)
-        self.assertIn('fetch("./ai_engine/model.json"', self.app)
+        self.assertIn('getJSON("./sample_data/alerts_sample.json")', self.app)
+        self.assertIn('getJSON("./ai_engine/model.json")', self.app)
 
 if __name__ == "__main__":
     unittest.main()
