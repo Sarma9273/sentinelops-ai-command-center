@@ -1,5 +1,6 @@
 """Transparent operational alert-correlation engine; not an investigation-reasoning system."""
 from collections import defaultdict
+from datetime import datetime
 
 def correlate(alerts):
     groups=[]
@@ -13,7 +14,11 @@ def correlate(alerts):
             same_host=a.get("target_host") and a.get("target_host")==b.get("target_host")
             same_user=a.get("username") and a.get("username")==b.get("username")
             same_mitre=a.get("mitre_id") and a.get("mitre_id")==b.get("mitre_id")
-            if sum(bool(x) for x in (same_source,same_host,same_user,same_mitre))>=1:
+            close_time=False
+            if a.get("timestamp") and b.get("timestamp"):
+                try: close_time=abs((datetime.fromisoformat(a["timestamp"])-datetime.fromisoformat(b["timestamp"])).total_seconds())<=3600
+                except ValueError: close_time=False
+            if sum(bool(x) for x in (same_source,same_host,same_user,same_mitre))>=1 and (close_time or same_source or same_host or same_user or same_mitre):
                 ids.append(b.get("alert_id"))
         ids=list(dict.fromkeys(ids))
         seen.update(ids)
