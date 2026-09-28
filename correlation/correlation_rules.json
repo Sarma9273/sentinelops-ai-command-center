@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0",
+  "rules": [
+    {
+      "id": "CORR-SOURCE",
+      "name": "Repeated source",
+      "fields": [
+        "source_ip"
+      ],
+      "window_minutes": 15,
+      "min_events": 2
+    },
+    {
+      "id": "CORR-HOST",
+      "name": "Same target host",
+      "fields": [
+        "target_host"
+      ],
+      "window_minutes": 15,
+      "min_events": 2
+    },
+    {
+      "id": "CORR-USER",
+      "name": "Same user",
+      "fields": [
+        "username"
+      ],
+      "window_minutes": 15,
+      "min_events": 2
+    },
+    {
+      "id": "CORR-MITRE",
+      "name": "Same MITRE technique",
+      "fields": [
+        "mitre_id"
+      ],
+      "window_minutes": 30,
+      "min_events": 2
+    },
+    {
+      "id": "CORR-CHAIN",
+      "name": "Related event types",
+      "fields": [
+        "source_ip",
+        "target_host"
+      ],
+      "window_minutes": 15,
+      "min_events": 2
+    }
+  ]
+}
