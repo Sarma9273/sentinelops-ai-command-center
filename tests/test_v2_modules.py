@@ -14,7 +14,11 @@ class V2ModuleTests(unittest.TestCase):
   groups=correlate(alerts)
   self.assertEqual(groups[0]["count"],2)
   self.assertEqual(groups[1]["count"],1)
- def test_contract_files(self):
+ def test_correlation_time_window(self):
+  alerts=[{"alert_id":"A1","source_ip":"10.0.0.1","timestamp":"2026-06-23 10:00:00"},{"alert_id":"A2","source_ip":"10.0.0.1","timestamp":"2026-06-23 12:00:01"}]
+  groups=correlate(alerts)
+  self.assertEqual(groups[0]["count"],1)
+  def test_contract_files(self):
   for p in ["correlation/correlation_rules.json","workflow/alert_lifecycle.json"]:
    with open(ROOT/p,encoding="utf-8") as f: json.load(f)
 
