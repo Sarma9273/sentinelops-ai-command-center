@@ -1,7 +1,7 @@
 {
   "project_name": "SentinelOps-AI Command Center",
-  "current_phase": "Phase 2.2 - GitHub-only Browser Product Release",
-  "status": "Completed current GitHub-only product baseline with automated validation and release hardening",
+  "current_phase": "Phase 2.0 - AI-Assisted SOC Operations Platform",
+  "status": "V2 implementation and automated validation active; final release gate pending",
   "canonical_source": "GitHub repository",
   "runtime": "GitHub Pages + browser JavaScript",
   "cost_model": "$0 / GitHub-only",
@@ -13,11 +13,12 @@
     "Phase 1.4",
     "Phase 1.5",
     "Phase 2.1",
-    "Phase 2.2"
+    "Phase 2.2",
+    "Phase 2.0"
   ],
   "runtime_entrypoint": "index.html",
   "state_storage": "browser localStorage",
-  "risk_model": "deterministic explainable rules",
+  "risk_model": "hybrid deterministic + local logistic regression",
   "repository_ready": true,
   "validation": {
     "workflow": ".github/workflows/pages.yml",
@@ -26,7 +27,10 @@
     "json_validation": true,
     "python_syntax_validation": true,
     "risk_regression_validation": true,
-    "incident_contract_validation": true
+    "incident_contract_validation": true,
+    "v2_ai_contract_validation": true,
+    "v2_evaluation_in_ci": true,
+    "v2_operational_workflow": true
   },
   "release_scope": {
     "live_siem_ingestion": false,
@@ -36,5 +40,5 @@
     "production_soar_execution": false,
     "external_api_dependency": false
   },
-  "release_policy": "Current GitHub-only product is release-ready after final human browser verification and repository visibility/deployment verification."
+  "release_policy": "V2 remains on the development branch until implementation, CI, browser verification, security review, documentation review, and final release approval are complete."
 }
