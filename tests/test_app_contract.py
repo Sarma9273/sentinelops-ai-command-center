@@ -16,7 +16,7 @@ class BrowserAppContractTests(unittest.TestCase):
         self.assertIn("!r.ok", self.app)
 
     def test_core_workflow_contract(self):
-        for token in ["scoreAlert", "scoreAI", "mlFeatures", "hybrid_risk", "model_version", "renderAiRiskSummary", "aiRiskSummary", "caseFeedback", "pb-step", "Operational timeline", "playbook_steps", "timeline", "caseForAlert", "renderPlaybooks", "renderMitre", "openAlert", "openIncident", "localStorage"]:
+        for token in ["scoreAlert", "scoreAI", "mlFeatures", "hybrid_risk", "model_version", "renderAiRiskSummary", "aiRiskSummary", "caseFeedback", "pb-step", "Operational timeline", "playbook_steps", "timeline", "renderCorrelation", "renderAnalytics", "renderEvaluation", "correlationGrid", "analyticsGrid", "evaluationGrid", "caseForAlert", "renderPlaybooks", "renderMitre", "openAlert", "openIncident", "localStorage"]:
             self.assertIn(token, self.app)
 
     def test_security_contract(self):
