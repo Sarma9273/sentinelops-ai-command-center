@@ -1,7 +1,7 @@
 {
   "project_name": "SentinelOps-AI Command Center",
   "current_phase": "Phase 2.0 - AI-Assisted SOC Operations Platform",
-  "status": "V2 implementation complete; CI and security contract validation passing; final browser verification and release gate pending",
+  "status": "V2.0 complete and merged to main; automated CI verification passing; GitHub Pages deployment pending",
   "canonical_source": "GitHub repository",
   "runtime": "GitHub Pages + browser JavaScript",
   "cost_model": "$0 / GitHub-only",
@@ -43,5 +43,5 @@
     "external_api_dependency": false,
     "autonomous_ml": false
   },
-  "release_policy": "V2 remains on the development branch until implementation, CI, browser verification, security review, documentation review, and final release approval are complete."
+  "release_policy": "V2.0 implementation is complete. Main is the release branch; future changes require a new versioned development branch and verification cycle."
 }
